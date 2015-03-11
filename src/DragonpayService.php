@@ -41,6 +41,7 @@ class DragonpayService
     /**
      * Get the generated URL for inquiring the status of a transaction.
      *
+     * @param $transactionId
      * @return string
      */
     public function getTransactionInquiryUrl($transactionId)
@@ -56,9 +57,7 @@ class DragonpayService
     /**
      * Get the generated URL for the cancellation of a transaction.
      *
-     * @param $merchantId
-     * @param $merchantPwd
-     * @param $txnId
+     * @param $transactionId
      * @return string
      */
     public function getTransactionCancellationUrl($transactionId)
@@ -79,6 +78,8 @@ class DragonpayService
      */
     public function getTransactionStatus($statusCode)
     {
+        $status = '';
+
         switch ($statusCode) {
             case 'S':
                 $status = 'success';
