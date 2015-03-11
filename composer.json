@@ -1,5 +1,5 @@
 {
-    "name": "coreproc/dragonpay",
+    "name": "coreproc/dragonpay-sdk",
     "description": "A PHP Library for Dragonpay API",
     "required": {
         "php": ">=5.4.0"
