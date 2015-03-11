@@ -2,8 +2,13 @@
 
 class URLGenerator
 {
+    // Payment URLs
+    private $basePaymentUrl = 'http://gw.dragonpay.ph/Pay.aspx';
+    private $testPaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
 
-    private $baseUrl = 'http://test.dragonpay.ph/Pay.aspx';
+    // Support URLs
+    private $basePaymentUrl = 'http://gw.dragonpay.ph/Pay.aspx';
+    private $testSupportUrl = 'http://test.dragonpay.ph/MerchantRequest.aspx';
 
     /**
      * Generate the URL for redirecting the merchant to Payment Switch.
@@ -33,7 +38,7 @@ class URLGenerator
 
         $params .= '&digest=' . urlencode($digest);
 
-        $url = "$this->baseUrl?$params";
+        $url = "$this->basePaymentUrl?$params";
 
         return $url;
     }
@@ -52,7 +57,7 @@ class URLGenerator
         $params = "op={$operation}&merchantid={$merchantId}&merchantpwd={$merchantPwd}"
             . "&txnid={$txnId}";
 
-        $url = "$this->baseUrl?$params";
+        $url = "$this->baseSupportUrl?$params";
 
         return $url;
     }
