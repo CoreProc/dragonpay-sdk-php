@@ -45,7 +45,7 @@ class URLGenerator
     }
 
     /**
-     * Generate the URL for inquiring a transaction's status.
+     * Generate the URL for querying a transaction.
      *
      * @param $merchantId
      * @param $merchantPassword

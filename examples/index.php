@@ -2,16 +2,18 @@
 
 require '../vendor/autoload.php';
 
-use Coreproc\Dragonpay\DragonpayService;
-use Coreproc\Dragonpay\DragonpayTransaction;
+use Coreproc\Dragonpay\DragonpayClient;
+use Coreproc\Dragonpay\Checkout;
+use Coreproc\Dragonpay\Transaction;
 
 $merchantId = '123456';
 $secretKey = 'secret';
 $password = 'password';
 
-$service = new DragonpayService($merchantId, $secretKey, $password);
+$client = new DragonpayClient($merchantId, $secretKey, $password);
 
 # Generating URL to Payment Switch
+$checkout = new Checkout($client);
 
 // Form data from merchant site
 $data = array(
@@ -23,7 +25,7 @@ $data = array(
 );
 
 // Get the generated URL
-$url = $service->getUrl($data);
+$url = $checkout->getUrl($data);
 
 echo("URL to Dragonpay PS: " . $url . '<br>');
 
@@ -39,14 +41,13 @@ $data2 = array(
     'digest'        => '12345678987654321',
 );
 
-$transaction = new DragonpayTransaction($service);
+$transaction = new Transaction($client);
 
 // Get string representation of status
 $status = $transaction->getStatus($data2['status']);
 
-
 // Check if transaction is successful
-if ($transaction->isValidForShipping($data2['message'], $data2['digest'], $status)) {
+if ($transaction->isSuccessful($data2['message'], $data2['digest'], $status)) {
     // Proceed to shipping
     echo 'TRANSACTION STATUS: ' . $status . '<br>';
 } else {

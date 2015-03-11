@@ -2,25 +2,27 @@
 
 use Coreproc\Dragonpay\Classes\URLGenerator;
 
-class DragonpayTransaction
+class Transaction
 {
 
     /**
-     * @var DragonpayService
+     * @var DragonpayClient
      */
     private $service;
 
     private $urlGenerator;
 
-    public function __construct(DragonpayService $service)
+    public function __construct(DragonpayClient $service)
     {
         $this->service = $service;
         $this->urlGenerator = new URLGenerator();
     }
 
     /**
+     * Get the generated URL for inquiring a transaction's status.
+     *
      * @param $transactionId
-     * @return mixed
+     * @return string
      */
     public function getInquiryUrl($transactionId)
     {
@@ -165,14 +167,14 @@ class DragonpayTransaction
     }
 
     /**
-     * Determine if order is ready for shipping.
+     * Determine if transaction is successful.
      *
      * @param $message
      * @param $digest
      * @param $status
      * @return bool
      */
-    public function isValidForShipping($message, $digest, $status)
+    public function isSuccessful($message, $digest, $status)
     {
         return sha1($message) == $digest && $status == 'success';
     }

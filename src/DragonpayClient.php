@@ -2,13 +2,8 @@
 
 use Coreproc\Dragonpay\Classes\URLGenerator;
 
-class DragonpayService
+class DragonpayClient
 {
-
-    /**
-     * @var URLGenerator
-     */
-    private $urlGenerator;
 
     private $merchantId;
 
@@ -18,7 +13,6 @@ class DragonpayService
 
     public function __construct($merchantId, $secretKey, $merchantPassword)
     {
-        $this->urlGenerator = new URLGenerator();
         $this->merchantId = $merchantId;
         $this->secretKey = $secretKey;
         $this->merchantPassword = $merchantPassword;
@@ -37,20 +31,6 @@ class DragonpayService
     public function getMerchantPassword()
     {
         return $this->merchantPassword;
-    }
-
-    /**
-     * Get the generated URL for redirecting to Payment Switch.
-     *
-     * @param array $data
-     * @return string
-     */
-    public function getUrl(array $data)
-    {
-        $data['merchantId'] = $this->merchantId;
-        $data['secretKey'] = $this->secretKey;
-
-        return $this->urlGenerator->generate($data);
     }
 
 }
