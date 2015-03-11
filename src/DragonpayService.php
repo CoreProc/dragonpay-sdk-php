@@ -24,6 +24,21 @@ class DragonpayService
         $this->merchantPassword = $merchantPassword;
     }
 
+    public function getMerchantId()
+    {
+        return $this->merchantId;
+    }
+
+    public function getSecretKey()
+    {
+        return $this->secretKey;
+    }
+
+    public function getMerchantPassword()
+    {
+        return $this->merchantPassword;
+    }
+
     /**
      * Get the generated URL for redirecting to Payment Switch.
      *
@@ -36,109 +51,6 @@ class DragonpayService
         $data['secretKey'] = $this->secretKey;
 
         return $this->urlGenerator->generate($data);
-    }
-
-    /**
-     * Get the generated URL for inquiring the status of a transaction.
-     *
-     * @param $transactionId
-     * @return string
-     */
-    public function getTransactionInquiryUrl($transactionId)
-    {
-        return $this->urlGenerator->generateTransactionQueryUrl(
-            $this->merchantId,
-            $this->merchantPassword,
-            $transactionId,
-            'GETSTATUS'
-        );
-    }
-
-    /**
-     * Get the generated URL for the cancellation of a transaction.
-     *
-     * @param $transactionId
-     * @return string
-     */
-    public function getTransactionCancellationUrl($transactionId)
-    {
-        return $this->urlGenerator->generateTransactionQueryUrl(
-            $this->merchantId,
-            $this->merchantPassword,
-            $transactionId,
-            'VOID'
-        );
-    }
-
-    /**
-     * Get the status of a transaction.
-     *
-     * @param $statusCode
-     * @return string
-     */
-    public function getTransactionStatus($statusCode)
-    {
-        $status = '';
-
-        switch ($statusCode) {
-            case 'S':
-                $status = 'success';
-                break;
-            case 'F':
-                $status = 'failure';
-                break;
-            case 'P':
-                $status = 'pending';
-                break;
-            case 'U':
-                $status = 'unknown';
-                break;
-            case 'R':
-                $status = 'refund';
-                break;
-            case 'K':
-                $status = 'chargeback';
-                break;
-            case 'V':
-                $status = 'void';
-                break;
-            case 'A':
-                $status = 'authorized';
-                break;
-        }
-
-        return $status;
-    }
-
-    /**
-     * Get the status of a transaction cancellation.
-     *
-     * @param $statusCode
-     * @return string
-     */
-    public function getTransactionCancellationStatus($statusCode)
-    {
-        switch ($statusCode) {
-            case 0:
-                return 'success';
-                break;
-            default:
-                return 'failed';
-                break;
-        }
-    }
-
-    /**
-     * Determine if order is ready for shipping.
-     *
-     * @param $message
-     * @param $digest
-     * @param $status
-     * @return bool
-     */
-    public function isValidForShipping($message, $digest, $status)
-    {
-        return sha1($message) == $digest && $status == 'success';
     }
 
 }

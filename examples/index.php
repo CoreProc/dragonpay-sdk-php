@@ -3,6 +3,7 @@
 require '../vendor/autoload.php';
 
 use Coreproc\Dragonpay\DragonpayService;
+use Coreproc\Dragonpay\DragonpayTransaction;
 
 $merchantId = '123456';
 $secretKey = 'secret';
@@ -41,16 +42,18 @@ $data2 = array(
 // Pass secret key from merchant
 $data2['secretKey'] = 'secret';
 
+$transaction = new DragonpayTransaction($service);
+
 // Get string representation of status
-$status = $service->getTransactionStatus($data2['status']);
+$status = $transaction->getTransactionStatus($data2['status']);
 
 // Check if transaction is successful
-if ($service->isValidForShipping($data2['message'], $data2['digest'], $status)) {
-    echo 'TRANSACTION STATUS:' . $status . '<br>';
+if ($transaction->isValidForShipping($data2['message'], $data2['digest'], $status)) {
+    echo 'TRANSACTION STATUS: ' . $status . '<br>';
 }
 
 // Handle other status here
-echo 'TRANSACTION STATUS:' . $status . '<br>';
+echo 'TRANSACTION STATUS: ' . $status . '<br>';
 echo '<hr>';
 
 # Inquire transaction status
@@ -59,25 +62,25 @@ echo '<hr>';
 $transactionId = 12345;
 
 // Get generated URL from inquiring transaction status from PS.
-$url = $service->getTransactionInquiryUrl($transactionId);
+$url = $transaction->getTransactionInquiryUrl($transactionId);
 
-echo 'TRANSACTION INQUIRY URL :' . $url;
+echo 'TRANSACTION INQUIRY URL: ' . $url;
 echo '<br>';
 
 // Get status
 // Request data from PS
 $status = 'S';
 
-echo 'TRANSACTION STATUS:' . $service->getTransactionStatus($status) . '<br>';
+echo 'TRANSACTION STATUS: ' . $transaction->getTransactionStatus($status) . '<br>';
 echo '<hr>';
 
 # Cancellation of transaction
-$url = $service->getTransactionCancellationUrl($transactionId);
+$url = $transaction->getTransactionCancellationUrl($transactionId);
 
-echo 'TRANSACTION CANCELLATION URL:' . $url . '<br>';
+echo 'TRANSACTION CANCELLATION URL: ' . $url . '<br>';
 
 // Get status
 // Request data from PS
 $status = 0;
-echo 'CANCELLATION STATUS:' . $service->getTransactionCancellationStatus($status);
+echo 'CANCELLATION STATUS: ' . $transaction->getTransactionCancellationStatus($status);
 echo '<hr>';
