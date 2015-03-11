@@ -22,7 +22,7 @@ class DragonpayTransaction
      * @param $transactionId
      * @return mixed
      */
-    public function getTransactionInquiryUrl($transactionId)
+    public function getInquiryUrl($transactionId)
     {
         return $this->urlGenerator->generateTransactionQueryUrl(
             $this->service->getMerchantId(),
@@ -38,7 +38,7 @@ class DragonpayTransaction
      * @param $transactionId
      * @return string
      */
-    public function getTransactionCancellationUrl($transactionId)
+    public function getCancellationUrl($transactionId)
     {
         return $this->urlGenerator->generateTransactionQueryUrl(
             $this->service->getMerchantId(),
@@ -54,7 +54,7 @@ class DragonpayTransaction
      * @param $statusCode
      * @return string
      */
-    public function getTransactionStatus($statusCode)
+    public function getStatus($statusCode)
     {
         $status = '';
 
@@ -94,7 +94,7 @@ class DragonpayTransaction
      * @param $statusCode
      * @return string
      */
-    public function getTransactionCancellationStatus($statusCode)
+    public function getCancellationStatus($statusCode)
     {
         switch ($statusCode) {
             case 0:

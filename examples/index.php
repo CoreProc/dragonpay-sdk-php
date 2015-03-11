@@ -42,7 +42,7 @@ $data2 = array(
 $transaction = new DragonpayTransaction($service);
 
 // Get string representation of status
-$status = $transaction->getTransactionStatus($data2['status']);
+$status = $transaction->getStatus($data2['status']);
 
 
 // Check if transaction is successful
@@ -69,7 +69,7 @@ echo '<hr>';
 $transactionId = 12345;
 
 // Get generated URL from inquiring transaction status from PS.
-$url = $transaction->getTransactionInquiryUrl($transactionId);
+$url = $transaction->getInquiryUrl($transactionId);
 
 echo 'TRANSACTION INQUIRY URL: ' . $url;
 echo '<br>';
@@ -78,16 +78,16 @@ echo '<br>';
 // Request data from PS
 $status = 'S';
 
-echo 'TRANSACTION STATUS: ' . $transaction->getTransactionStatus($status) . '<br>';
+echo 'TRANSACTION STATUS: ' . $transaction->getStatus($status) . '<br>';
 echo '<hr>';
 
 # Cancellation of transaction
-$url = $transaction->getTransactionCancellationUrl($transactionId);
+$url = $transaction->getCancellationUrl($transactionId);
 
 echo 'TRANSACTION CANCELLATION URL: ' . $url . '<br>';
 
 // Get status
 // Request data from PS
 $status = 0;
-echo 'CANCELLATION STATUS: ' . $transaction->getTransactionCancellationStatus($status);
+echo 'CANCELLATION STATUS: ' . $transaction->getCancellationStatus($status);
 echo '<hr>';
