@@ -7,7 +7,7 @@ class URLGenerator
     private $testPaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
 
     // Support URLs
-    private $basePaymentUrl = 'http://gw.dragonpay.ph/Pay.aspx';
+    private $baseSupportUrl = 'http://gw.dragonpay.ph/MerchantRequest.aspx';
     private $testSupportUrl = 'http://test.dragonpay.ph/MerchantRequest.aspx';
 
     /**
