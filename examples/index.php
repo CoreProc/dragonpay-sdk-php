@@ -31,7 +31,7 @@ echo("URL to Dragonpay PS: " . $url . '<br>');
 // Request data from PS API
 // params: txnid, refno, status, message, digest
 $data2 = array(
-    'txnid'   => '987654',
+    'transactionId'   => '987654',
     'refno'   => '123456',
     'status'  => 'S', // Result of payment
     'message' => 'Blah blah', // Success: PG Trans. Refno, Failure: Error codes, Pending: Refno to complete funding
@@ -39,7 +39,7 @@ $data2 = array(
 );
 
 // Pass secret key from merchant
-$data2['secretkey'] = 'secret';
+$data2['secretKey'] = 'secret';
 
 // Get string representation of status
 $status = $service->getTransactionStatus($data2['status']);
@@ -56,12 +56,10 @@ echo '<hr>';
 # Inquire transaction status
 
 // Required params
-$merchantId = 12345;
-$merchantPwd = 'secret';
-$txnid = 12345;
+$transactionId = 12345;
 
 // Get generated URL from inquiring transaction status from PS.
-$url = $service->getTransactionInquiryUrl($merchantId, $merchantPwd, $txnid);
+$url = $service->getTransactionInquiryUrl($transactionId);
 
 echo 'TRANSACTION INQUIRY URL :' . $url;
 echo '<br>';
@@ -74,7 +72,7 @@ echo 'TRANSACTION STATUS:' . $service->getTransactionStatus($status) . '<br>';
 echo '<hr>';
 
 # Cancellation of transaction
-$url = $service->getTransactionCancellationUrl($merchantId, $merchantPwd, $txnid);
+$url = $service->getTransactionCancellationUrl($transactionId);
 
 echo 'TRANSACTION CANCELLATION URL:' . $url . '<br>';
 
