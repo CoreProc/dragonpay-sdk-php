@@ -107,6 +107,64 @@ class DragonpayTransaction
     }
 
     /**
+     * Get the transaction error.
+     *
+     * @param $errorCode
+     * @return string
+     */
+    public function getError($errorCode)
+    {
+        $error = '';
+
+        switch ($errorCode) {
+            case 000:
+                $error = 'success';
+                break;
+            case 101:
+                $error = 'invalid payment gateway id';
+                break;
+            case 102:
+                $error = 'incorrect secret key';
+                break;
+            case 103:
+                $error = 'invalid reference number';
+                break;
+            case 104:
+                $error = 'unauthorized access';
+                break;
+            case 105:
+                $error = 'invalid token';
+                break;
+            case 106:
+                $error = 'currency not supported';
+                break;
+            case 107:
+                $error = 'transaction cancelled';
+                break;
+            case 108:
+                $error = 'insufficient funds';
+                break;
+            case 109:
+                $error = 'transaction limit exceeded';
+                break;
+            case 110:
+                $error = 'error in operation';
+                break;
+            case 111:
+                $error = 'invalid parameters';
+                break;
+            case 201:
+                $error = 'invalid merchant id';
+                break;
+            case 202:
+                $error = 'invalid merchant password';
+                break;
+        }
+
+        return $error;
+    }
+
+    /**
      * Determine if order is ready for shipping.
      *
      * @param $message
@@ -118,4 +176,5 @@ class DragonpayTransaction
     {
         return sha1($message) == $digest && $status == 'success';
     }
+
 }

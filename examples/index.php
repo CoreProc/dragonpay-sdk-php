@@ -32,28 +32,35 @@ echo("URL to Dragonpay PS: " . $url . '<br>');
 // Request data from PS API
 // params: txnid, refno, status, message, digest
 $data2 = array(
-    'transactionId'   => '987654',
-    'refno'   => '123456',
-    'status'  => 'S', // Result of payment
-    'message' => 'Blah blah', // Success: PG Trans. Refno, Failure: Error codes, Pending: Refno to complete funding
-    'digest'  => '12345678987654321',
+    'transactionId' => '987654',
+    'refno'         => '123456',
+    'status'        => 'S', // Result of payment
+    'message'       => 'Blah blah', // Success: PG Trans. Refno, Failure: Error codes, Pending: Refno to complete funding
+    'digest'        => '12345678987654321',
 );
-
-// Pass secret key from merchant
-$data2['secretKey'] = 'secret';
 
 $transaction = new DragonpayTransaction($service);
 
 // Get string representation of status
 $status = $transaction->getTransactionStatus($data2['status']);
 
+
 // Check if transaction is successful
 if ($transaction->isValidForShipping($data2['message'], $data2['digest'], $status)) {
+    // Proceed to shipping
     echo 'TRANSACTION STATUS: ' . $status . '<br>';
+} else {
+    // Handle other status here
+    // Abort processing?
+    echo 'TRANSACTION STATUS: ' . $status . '<br>';
+
+    // If status is failed, message would be an error code
+    if ($status == 'failed') {
+        $error = $transaction->getError($data2['message']);
+        echo 'Error in transaction: ' . $error;
+    }
 }
 
-// Handle other status here
-echo 'TRANSACTION STATUS: ' . $status . '<br>';
 echo '<hr>';
 
 # Inquire transaction status
