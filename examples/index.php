@@ -3,8 +3,8 @@
 require '../vendor/autoload.php';
 
 use Coreproc\Dragonpay\DragonpayClient;
-use Coreproc\Dragonpay\Checkout;
-use Coreproc\Dragonpay\Transaction;
+use Coreproc\Dragonpay\Classes\Checkout;
+use Coreproc\Dragonpay\Classes\Transaction;
 
 $merchantId = '123456';
 $secretKey = 'secret';

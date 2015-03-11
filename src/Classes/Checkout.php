@@ -1,6 +1,6 @@
-<?php namespace Coreproc\Dragonpay;
+<?php namespace Coreproc\Dragonpay\Classes;
 
-use Coreproc\Dragonpay\Classes\URLGenerator;
+use Coreproc\Dragonpay\DragonpayClient;
 
 class Checkout
 {

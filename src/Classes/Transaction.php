@@ -1,6 +1,6 @@
-<?php namespace Coreproc\Dragonpay;
+<?php namespace Coreproc\Dragonpay\Classes;
 
-use Coreproc\Dragonpay\Classes\URLGenerator;
+use Coreproc\Dragonpay\DragonpayClient;
 
 class Transaction
 {
@@ -8,13 +8,13 @@ class Transaction
     /**
      * @var DragonpayClient
      */
-    private $service;
+    private $client;
 
     private $urlGenerator;
 
-    public function __construct(DragonpayClient $service)
+    public function __construct(DragonpayClient $client)
     {
-        $this->service = $service;
+        $this->client = $client;
         $this->urlGenerator = new URLGenerator();
     }
 
@@ -27,8 +27,8 @@ class Transaction
     public function getInquiryUrl($transactionId)
     {
         return $this->urlGenerator->generateTransactionQueryUrl(
-            $this->service->getMerchantId(),
-            $this->service->getMerchantPassword(),
+            $this->client->getMerchantId(),
+            $this->client->getMerchantPassword(),
             $transactionId,
             'GETSTATUS'
         );
@@ -43,8 +43,8 @@ class Transaction
     public function getCancellationUrl($transactionId)
     {
         return $this->urlGenerator->generateTransactionQueryUrl(
-            $this->service->getMerchantId(),
-            $this->service->getMerchantPassword(),
+            $this->client->getMerchantId(),
+            $this->client->getMerchantPassword(),
             $transactionId,
             'VOID'
         );
