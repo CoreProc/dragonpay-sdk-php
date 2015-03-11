@@ -10,9 +10,18 @@ class DragonpayService
      */
     private $urlGenerator;
 
-    public function __construct()
+    private $merchantId;
+
+    private $secretKey;
+
+    private $merchantPassword;
+
+    public function __construct($merchantId, $secretKey, $merchantPassword)
     {
         $this->urlGenerator = new URLGenerator();
+        $this->merchantId = $merchantId;
+        $this->secretKey = $secretKey;
+        $this->merchantPassword = $merchantPassword;
     }
 
     /**
@@ -23,20 +32,25 @@ class DragonpayService
      */
     public function getUrl(array $data)
     {
+        $data['merchantId'] = $this->merchantId;
+        $data['secretKey'] = $this->secretKey;
+
         return $this->urlGenerator->generate($data);
     }
 
     /**
      * Get the generated URL for inquiring the status of a transaction.
      *
-     * @param $merchantId
-     * @param $merchantPwd
-     * @param $txnId
      * @return string
      */
-    public function getTxnInquiryUrl($merchantId, $merchantPwd, $txnId)
+    public function getTransactionInquiryUrl($transactionId)
     {
-        return $this->urlGenerator->generateTxnQueryUrl($merchantId, $merchantPwd, $txnId, 'GETSTATUS');
+        return $this->urlGenerator->generateTransactionQueryUrl(
+            $this->merchantId,
+            $this->merchantPassword,
+            $transactionId,
+            'GETSTATUS'
+        );
     }
 
     /**
@@ -47,9 +61,14 @@ class DragonpayService
      * @param $txnId
      * @return string
      */
-    public function getTxnCancellationUrl($merchantId, $merchantPwd, $txnId)
+    public function getTransactionCancellationUrl($transactionId)
     {
-        return $this->urlGenerator->generateTxnQueryUrl($merchantId, $merchantPwd, $txnId, 'VOID');
+        return $this->urlGenerator->generateTransactionQueryUrl(
+            $this->merchantId,
+            $this->merchantPassword,
+            $transactionId,
+            'VOID'
+        );
     }
 
     /**
@@ -58,7 +77,7 @@ class DragonpayService
      * @param $statusCode
      * @return string
      */
-    public function getTxnStatus($statusCode)
+    public function getTransactionStatus($statusCode)
     {
         switch ($statusCode) {
             case 'S':
@@ -96,7 +115,7 @@ class DragonpayService
      * @param $statusCode
      * @return string
      */
-    public function getTxnCancellationStatus($statusCode)
+    public function getTransactionCancellationStatus($statusCode)
     {
         switch ($statusCode) {
             case 0:

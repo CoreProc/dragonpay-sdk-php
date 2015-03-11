@@ -2,6 +2,7 @@
 
 class URLGenerator
 {
+
     // Payment URLs
     private $basePaymentUrl = 'http://gw.dragonpay.ph/Pay.aspx';
     private $testPaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
@@ -20,8 +21,8 @@ class URLGenerator
     {
         $digest = $this->generateDigest($data);
 
-        $params = 'merchantid=' . urlencode($data['merchantid'])
-            . '&txnid=' . urlencode($data['txnid'])
+        $params = 'merchantid=' . urlencode($data['merchantId'])
+            . '&txnid=' . urlencode($data['transactionId'])
             . '&amount=' . urlencode($data['amount'])
             . '&ccy=' . urlencode($data['ccy'])
             . '&description=' . urlencode($data['description'])
@@ -47,15 +48,15 @@ class URLGenerator
      * Generate the URL for inquiring a transaction's status.
      *
      * @param $merchantId
-     * @param $merchantPwd
-     * @param $txnId
+     * @param $merchantPassword
+     * @param $transactionId
      * @param $operation
      * @return string
      */
-    public function generateTxnQueryUrl($merchantId, $merchantPwd, $txnId, $operation)
+    public function generateTransactionQueryUrl($merchantId, $merchantPassword, $transactionId, $operation)
     {
-        $params = "op={$operation}&merchantid={$merchantId}&merchantpwd={$merchantPwd}"
-            . "&txnid={$txnId}";
+        $params = "op={$operation}&merchantid={$merchantId}&merchantpwd={$merchantPassword}"
+            . "&txnid={$transactionId}";
 
         $url = "$this->baseSupportUrl?$params";
 
@@ -68,9 +69,9 @@ class URLGenerator
      */
     private function generateDigest(array $data)
     {
-        $message = "{$data['merchantid']}:{$data['txnid']}:{$data['amount']}"
+        $message = "{$data['merchantId']}:{$data['transactionId']}:{$data['amount']}"
             . ":{$data['ccy']}:{$data['description']}:{$data['email']}"
-            . ":{$data['secretkey']}";
+            . ":{$data['secretKey']}";
 
         return sha1($message);
     }
