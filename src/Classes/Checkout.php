@@ -11,14 +11,14 @@ class Checkout
     private $client;
 
     /**
-     * @var URLGenerator
+     * @var PaymentSwitchURLGenerator
      */
-    private $urlGenerator;
+    private $generator;
 
     public function __construct(DragonpayClient $client)
     {
         $this->client = $client;
-        $this->urlGenerator = new URLGenerator();
+        $this->generator = new PaymentSwitchURLGenerator();
     }
 
     /**
@@ -32,7 +32,7 @@ class Checkout
         $data['merchantId'] = $this->client->getMerchantId();
         $data['secretKey'] = $this->client->getSecretKey();
 
-        return $this->urlGenerator->generate($data);
+        return $this->generator->generate($data);
     }
 
 }

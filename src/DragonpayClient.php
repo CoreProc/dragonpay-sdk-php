@@ -1,7 +1,5 @@
 <?php namespace Coreproc\Dragonpay;
 
-use Coreproc\Dragonpay\Classes\URLGenerator;
-
 class DragonpayClient
 {
 

@@ -1,10 +1,10 @@
 <?php
 
+# Setting up the Client
+
 require '../vendor/autoload.php';
 
 use Coreproc\Dragonpay\DragonpayClient;
-use Coreproc\Dragonpay\Classes\Checkout;
-use Coreproc\Dragonpay\Classes\Transaction;
 
 $merchantId = '123456';
 $secretKey = 'secret';
@@ -13,82 +13,76 @@ $password = 'password';
 $client = new DragonpayClient($merchantId, $secretKey, $password);
 
 # Generating URL to Payment Switch
+
+use Coreproc\Dragonpay\Classes\Checkout;
+
 $checkout = new Checkout($client);
 
 // Form data from merchant site
 $data = array(
-    'transactionId' => '987654',
-    'amount'        => 1234.56,
+    'transactionId' => '12345',
+    'amount'        => 20499.99,
     'currency'      => 'PHP',
-    'description'   => 'Lorem ipsum dolor amet.',
+    'description'   => 'PS4',
     'email'         => 'john@example.com',
 );
 
 // Get the generated URL
 $url = $checkout->getUrl($data);
 
-echo("URL to Dragonpay PS: " . $url . '<br>');
+echo("URL to Dragonpay PS: " . $url . '<br><hr>');
 
 # Handling response from PS API
+
+use Coreproc\Dragonpay\Classes\Transaction;
 
 // Request data from PS API
 // params: txnid, refno, status, message, digest
 $data2 = array(
     'transactionId' => '987654',
     'refno'         => '123456',
-    'status'        => 'S', // Result of payment
+    'status'        => 'K', // Result of payment
     'message'       => 'Blah blah', // Success: PG Trans. Refno, Failure: Error codes, Pending: Refno to complete funding
     'digest'        => '12345678987654321',
 );
 
 $transaction = new Transaction($client);
 
-// Get string representation of status
-$status = $transaction->getStatus($data2['status']);
-
 // Check if transaction is successful
-if ($transaction->isSuccessful($data2['message'], $data2['digest'], $status)) {
+if ($transaction->isSuccessful($data2['message'], $data2['digest'], $data2['status'])) {
     // Proceed to shipping
-    echo 'TRANSACTION STATUS: ' . $status . '<br>';
+    echo 'Transaction is successful. Proceed to shipment of the order';
 } else {
-    // Handle other status here
     // Abort processing?
-    echo 'TRANSACTION STATUS: ' . $status . '<br>';
 
     // If status is failed, message would be an error code
-    if ($status == 'failed') {
-        $error = $transaction->getError($data2['message']);
+    if ($transaction->fails($data2['status'])) {
+        $error = $transaction->parseErrorCode($data2['message']);
         echo 'Error in transaction: ' . $error;
     }
+
+    // Handle other status here
+    $status = $transaction->parseStatusCode($data2['status']);
+
+    echo 'Transaction status: ' . $status;
 }
 
 echo '<hr>';
 
-# Inquire transaction status
+# Transaction status inquiry
 
-// Required params
+$transaction = new Transaction($client);
+
 $transactionId = 12345;
 
-// Get generated URL from inquiring transaction status from PS.
-$url = $transaction->getInquiryUrl($transactionId);
+$status = $transaction->statusInquiry($transactionId);
 
-echo 'TRANSACTION INQUIRY URL: ' . $url;
-echo '<br>';
+echo 'Transaction status: ' . $status . '<br>' . '<hr>';
 
-// Get status
-// Request data from PS
-$status = 'S';
+# Transaction cancellation
 
-echo 'TRANSACTION STATUS: ' . $transaction->getStatus($status) . '<br>';
-echo '<hr>';
+$transactionId = 12345;
 
-# Cancellation of transaction
-$url = $transaction->getCancellationUrl($transactionId);
+$status = $transaction->cancel($transactionId);
 
-echo 'TRANSACTION CANCELLATION URL: ' . $url . '<br>';
-
-// Get status
-// Request data from PS
-$status = 0;
-echo 'CANCELLATION STATUS: ' . $transaction->getCancellationStatus($status);
-echo '<hr>';
+echo 'Transaction cancellation status: ' . $status;

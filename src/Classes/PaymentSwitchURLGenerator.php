@@ -1,15 +1,11 @@
 <?php namespace Coreproc\Dragonpay\Classes;
 
-class URLGenerator
+class PaymentSwitchURLGenerator
 {
 
     // Payment URLs
-    private $basePaymentUrl = 'http://gw.dragonpay.ph/Pay.aspx';
-    private $testPaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
-
-    // Support URLs
-    private $baseSupportUrl = 'http://gw.dragonpay.ph/MerchantRequest.aspx';
-    private $testSupportUrl = 'http://test.dragonpay.ph/MerchantRequest.aspx';
+    private $baseUrl = 'http://gw.dragonpay.ph/Pay.aspx';
+    private $testUrl = 'http://test.dragonpay.ph/Pay.aspx';
 
     /**
      * Generate the URL for redirecting the merchant to Payment Switch.
@@ -39,26 +35,7 @@ class URLGenerator
 
         $params .= '&digest=' . urlencode($digest);
 
-        $url = "$this->basePaymentUrl?$params";
-
-        return $url;
-    }
-
-    /**
-     * Generate the URL for querying a transaction.
-     *
-     * @param $merchantId
-     * @param $merchantPassword
-     * @param $transactionId
-     * @param $operation
-     * @return string
-     */
-    public function generateTransactionQueryUrl($merchantId, $merchantPassword, $transactionId, $operation)
-    {
-        $params = "op={$operation}&merchantid={$merchantId}&merchantpwd={$merchantPassword}"
-            . "&txnid={$transactionId}";
-
-        $url = "$this->baseSupportUrl?$params";
+        $url = "$this->testUrl?$params";
 
         return $url;
     }

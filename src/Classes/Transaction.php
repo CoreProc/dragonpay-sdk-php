@@ -1,89 +1,129 @@
 <?php namespace Coreproc\Dragonpay\Classes;
 
 use Coreproc\Dragonpay\DragonpayClient;
+use GuzzleHttp\Client;
 
 class Transaction
 {
 
-    /**
-     * @var DragonpayClient
-     */
+    // Support URLs
+    private $baseUrl = 'http://gw.dragonpay.ph/MerchantRequest.aspx';
+    private $testUrl = 'http://test.dragonpay.ph/MerchantRequest.aspx';
+
     private $client;
 
-    private $urlGenerator;
+    private $guzzleClient;
 
     public function __construct(DragonpayClient $client)
     {
         $this->client = $client;
-        $this->urlGenerator = new URLGenerator();
+        $this->guzzleClient = new Client();
     }
 
     /**
-     * Get the generated URL for inquiring a transaction's status.
+     * Inquire for the status of transaction.
      *
      * @param $transactionId
      * @return string
      */
-    public function getInquiryUrl($transactionId)
+    public function statusInquiry($transactionId)
     {
-        return $this->urlGenerator->generateTransactionQueryUrl(
-            $this->client->getMerchantId(),
-            $this->client->getMerchantPassword(),
-            $transactionId,
-            'GETSTATUS'
-        );
+        $response = $this->guzzleClient->get($this->testUrl, [
+            'query' => [
+                'op'          => 'GETSTATUS',
+                'merchantid'  => $this->client->getMerchantId(),
+                'merchantpwd' => $this->client->getMerchantPassword(),
+                'txnid'       => $transactionId
+            ],
+        ]);
+
+        $code = $response->getBody();
+
+        return $this->parseStatusCode($code);
     }
 
     /**
-     * Get the generated URL for the cancellation of a transaction.
+     * Cancel a transaction.
      *
      * @param $transactionId
      * @return string
      */
-    public function getCancellationUrl($transactionId)
+    public function cancel($transactionId)
     {
-        return $this->urlGenerator->generateTransactionQueryUrl(
-            $this->client->getMerchantId(),
-            $this->client->getMerchantPassword(),
-            $transactionId,
-            'VOID'
-        );
+        $response = $this->guzzleClient->get($this->testUrl, [
+            'query' => [
+                'op'          => 'VOID',
+                'merchantid'  => $this->client->getMerchantId(),
+                'merchantpwd' => $this->client->getMerchantPassword(),
+                'txnid'       => $transactionId
+            ],
+        ]);
+
+        $code = $response->getBody();
+
+        return $this->parseCancellationStatusCode($code);
     }
 
     /**
-     * Get the status of a transaction.
+     * Check if a transaction is successful.
+     *
+     * @param $message
+     * @param $digest
+     * @param $statusCode
+     * @return bool
+     */
+    public function isSuccessful($message, $digest, $statusCode)
+    {
+        $status = $this->parseStatusCode($statusCode);
+
+        return sha1($message) == $digest && $status == 'Success';
+    }
+
+    /**
+     * Check if a transaction fails.
      *
      * @param $statusCode
+     * @return bool
+     */
+    public function fails($statusCode)
+    {
+        return $this->parseStatusCode($statusCode) == 'Failure';
+    }
+
+    /**
+     * Get the string representation of a transaction's status code.
+     *
+     * @param $code
      * @return string
      */
-    public function getStatus($statusCode)
+    public function parseStatusCode($code)
     {
         $status = '';
 
-        switch ($statusCode) {
+        switch ($code) {
             case 'S':
-                $status = 'success';
+                $status = 'Success';
                 break;
             case 'F':
-                $status = 'failure';
+                $status = 'Failure';
                 break;
             case 'P':
-                $status = 'pending';
+                $status = 'Pending';
                 break;
             case 'U':
-                $status = 'unknown';
+                $status = 'Unknown';
                 break;
             case 'R':
-                $status = 'refund';
+                $status = 'Refund';
                 break;
             case 'K':
-                $status = 'chargeback';
+                $status = 'Chargeback';
                 break;
             case 'V':
-                $status = 'void';
+                $status = 'Void';
                 break;
             case 'A':
-                $status = 'authorized';
+                $status = 'Authorized';
                 break;
         }
 
@@ -91,92 +131,79 @@ class Transaction
     }
 
     /**
-     * Get the status of a transaction cancellation.
+     * Get the string representation of a transaction's cancellation status code.
      *
-     * @param $statusCode
+     * @param $code
      * @return string
      */
-    public function getCancellationStatus($statusCode)
+    private function parseCancellationStatusCode($code)
     {
-        switch ($statusCode) {
-            case 0:
-                return 'success';
+        switch ($code) {
+            case '0':
+                return 'Success';
                 break;
             default:
-                return 'failed';
+                return 'Failed';
                 break;
         }
     }
 
     /**
-     * Get the transaction error.
+     * Get the string representation of a transaction's error code.
      *
-     * @param $errorCode
+     * @param $code
      * @return string
      */
-    public function getError($errorCode)
+    public function parseErrorCode($code)
     {
         $error = '';
 
-        switch ($errorCode) {
+        switch ($code) {
             case 000:
-                $error = 'success';
+                $error = 'Success';
                 break;
             case 101:
-                $error = 'invalid payment gateway id';
+                $error = 'Invalid payment gateway id';
                 break;
             case 102:
-                $error = 'incorrect secret key';
+                $error = 'Incorrect secret key';
                 break;
             case 103:
-                $error = 'invalid reference number';
+                $error = 'Invalid reference number';
                 break;
             case 104:
-                $error = 'unauthorized access';
+                $error = 'Unauthorized access';
                 break;
             case 105:
-                $error = 'invalid token';
+                $error = 'Invalid token';
                 break;
             case 106:
-                $error = 'currency not supported';
+                $error = 'Currency not supported';
                 break;
             case 107:
-                $error = 'transaction cancelled';
+                $error = 'Transaction cancelled';
                 break;
             case 108:
-                $error = 'insufficient funds';
+                $error = 'Insufficient funds';
                 break;
             case 109:
-                $error = 'transaction limit exceeded';
+                $error = 'Transaction limit exceeded';
                 break;
             case 110:
-                $error = 'error in operation';
+                $error = 'Error in operation';
                 break;
             case 111:
-                $error = 'invalid parameters';
+                $error = 'Invalid parameters';
                 break;
             case 201:
-                $error = 'invalid merchant id';
+                $error = 'Invalid Merchant Id';
                 break;
             case 202:
-                $error = 'invalid merchant password';
+                $error = 'Invalid Merchant Password';
                 break;
         }
 
         return $error;
-    }
-
-    /**
-     * Determine if transaction is successful.
-     *
-     * @param $message
-     * @param $digest
-     * @param $status
-     * @return bool
-     */
-    public function isSuccessful($message, $digest, $status)
-    {
-        return sha1($message) == $digest && $status == 'success';
     }
 
 }
