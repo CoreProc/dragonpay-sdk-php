@@ -24,7 +24,7 @@ class URLGenerator
         $params = 'merchantid=' . urlencode($data['merchantId'])
             . '&txnid=' . urlencode($data['transactionId'])
             . '&amount=' . urlencode($data['amount'])
-            . '&ccy=' . urlencode($data['ccy'])
+            . '&ccy=' . urlencode($data['currency'])
             . '&description=' . urlencode($data['description'])
             . '&email=' . urlencode($data['email']);
 
@@ -70,7 +70,7 @@ class URLGenerator
     private function generateDigest(array $data)
     {
         $message = "{$data['merchantId']}:{$data['transactionId']}:{$data['amount']}"
-            . ":{$data['ccy']}:{$data['description']}:{$data['email']}"
+            . ":{$data['currency']}:{$data['description']}:{$data['email']}"
             . ":{$data['secretKey']}";
 
         return sha1($message);

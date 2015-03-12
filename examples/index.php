@@ -19,7 +19,7 @@ $checkout = new Checkout($client);
 $data = array(
     'transactionId' => '987654',
     'amount'        => 1234.56,
-    'ccy'           => 'PHP',
+    'currency'      => 'PHP',
     'description'   => 'Lorem ipsum dolor amet.',
     'email'         => 'john@example.com',
 );
