@@ -9,5 +9,8 @@
             "Coreproc\\Dragonpay\\": "src"
         }
     },
-    "minimum_stability": "dev"
+    "minimum_stability": "dev",
+    "require": {
+        "guzzlehttp/guzzle": "~5.0"
+    }
 }
