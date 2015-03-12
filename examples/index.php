@@ -12,7 +12,7 @@ $password = 'password';
 
 $client = new DragonpayClient($merchantId, $secretKey, $password);
 
-# Generating URL to Payment Switch
+# Getting the URL to Payment Switch
 
 use Coreproc\Dragonpay\Classes\Checkout;
 
