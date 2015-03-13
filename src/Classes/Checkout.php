@@ -1,4 +1,6 @@
-<?php namespace Coreproc\Dragonpay\Classes;
+<?php
+
+namespace Coreproc\Dragonpay\Classes;
 
 use Coreproc\Dragonpay\DragonpayClient;
 
@@ -15,10 +17,19 @@ class Checkout
      */
     private $generator;
 
+    /**
+     * @var \Katzgrau\KLogger\Logger
+     */
+    private $log;
+
     public function __construct(DragonpayClient $client)
     {
         $this->client = $client;
         $this->generator = new PaymentSwitchURLGenerator();
+
+        if ($this->client->isLoggingEnabled()) {
+            $this->log = $this->client->getLogger();
+        }
     }
 
     /**
@@ -32,7 +43,21 @@ class Checkout
         $data['merchantId'] = $this->client->getMerchantId();
         $data['secretKey'] = $this->client->getSecretKey();
 
-        return $this->generator->generate($data);
+        if ($this->client->isLoggingEnabled()) {
+            $this->log->info(
+                '[dragonpay-sdk][url-generation] Generating URL to Payment Switch API.'
+            );
+        }
+
+        $url = $this->generator->generate($data);
+
+        if ($url && $this->client->isLoggingEnabled()) {
+            $this->log->info(
+                '[dragonpay-sdk][url-generation] Successfully generated URL to Payment Switch API.'
+            );
+        }
+
+        return $url;
     }
 
 }

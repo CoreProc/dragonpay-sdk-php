@@ -3,8 +3,14 @@
 class PaymentSwitchURLGenerator
 {
 
-    // Payment URLs
-    private $baseUrl = 'http://gw.dragonpay.ph/Pay.aspx';
+    /**
+     * @var string Payment Switch Base Payment URL
+     */
+    private $baseUrl = 'https://gw.dragonpay.ph/Pay.aspx';
+
+    /**
+     * @var string Payment Switch Test Payment URL
+     */
     private $testUrl = 'http://test.dragonpay.ph/Pay.aspx';
 
     /**
@@ -15,7 +21,9 @@ class PaymentSwitchURLGenerator
      */
     public function generate(array $data)
     {
-        $digest = $this->generateDigest($data);
+        $data['digest'] = $this->generateDigest($data);
+
+        $this->validate($data);
 
         $params = 'merchantid=' . urlencode($data['merchantId'])
             . '&txnid=' . urlencode($data['transactionId'])
@@ -33,7 +41,7 @@ class PaymentSwitchURLGenerator
             $params .= '%26param2=' . urlencode($data['param2']);
         }
 
-        $params .= '&digest=' . urlencode($digest);
+        $params .= '&digest=' . urlencode($data['digest']);
 
         $url = "$this->testUrl?$params";
 
@@ -41,6 +49,8 @@ class PaymentSwitchURLGenerator
     }
 
     /**
+     * Generate a digest to be appended to the generated URL's params.
+     *
      * @param array $data
      * @return string
      */
@@ -51,6 +61,37 @@ class PaymentSwitchURLGenerator
             . ":{$data['secretKey']}";
 
         return sha1($message);
+    }
+
+    /**
+     * Validate fed inputs to the URL generator.
+     *
+     * @param array $data
+     * @throws ValidationException
+     */
+    private function validate(array $data)
+    {
+        $required = [
+            'merchantId',
+            'transactionId',
+            'amount',
+            'currency',
+            'description',
+            'email',
+            'digest',
+        ];
+
+        $errors = [];
+
+        foreach ($required as $key) {
+            if ( ! array_key_exists($key, $data) || empty($data[$key])) {
+                $errors[] = "The {$key} is required";
+            }
+        }
+
+        if (count($errors)) {
+            throw new ValidationException('Error: missing parameters. ', $errors);
+        }
     }
 
 }

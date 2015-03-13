@@ -1,4 +1,8 @@
-<?php namespace Coreproc\Dragonpay;
+<?php
+
+namespace Coreproc\Dragonpay;
+
+use Katzgrau\KLogger\Logger;
 
 class DragonpayClient
 {
@@ -9,11 +13,34 @@ class DragonpayClient
 
     private $merchantPassword;
 
-    public function __construct($merchantId, $secretKey, $merchantPassword)
+    private $logging = false;
+
+    /**
+     * @var Logger
+     */
+    private $logger;
+
+    /**
+     * @param $merchantId
+     * @param $secretKey
+     * @param $merchantPassword
+     * @param bool $logging
+     * @param null|string $logDirectory
+     */
+    public function __construct($merchantId, $secretKey, $merchantPassword, $logging = false, $logDirectory = null)
     {
         $this->merchantId = $merchantId;
         $this->secretKey = $secretKey;
         $this->merchantPassword = $merchantPassword;
+
+        if ($logging == true) {
+            if ($logDirectory !== null && is_dir($logDirectory)) {
+                $this->logging = true;
+                $this->logger = new Logger($logDirectory);
+            } else {
+                die('Please make sure that you set a valid log directory to enable logging.');
+            }
+        }
     }
 
     public function getMerchantId()
@@ -29,6 +56,16 @@ class DragonpayClient
     public function getMerchantPassword()
     {
         return $this->merchantPassword;
+    }
+
+    public function isLoggingEnabled()
+    {
+        return $this->logging;
+    }
+
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
 }

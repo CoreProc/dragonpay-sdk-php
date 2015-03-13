@@ -6,18 +6,42 @@ use GuzzleHttp\Client;
 class Transaction
 {
 
-    // Support URLs
-    private $baseUrl = 'http://gw.dragonpay.ph/MerchantRequest.aspx';
+    /**
+     * @var string Base URL for querying a transaction
+     */
+    private $baseUrl = 'https://gw.dragonpay.ph/MerchantRequest.aspx';
+
+    /**
+     * @var string Test URL for querying a transaction
+     */
     private $testUrl = 'http://test.dragonpay.ph/MerchantRequest.aspx';
 
+    /**
+     * @var DragonpayClient
+     */
     private $client;
 
+    /**
+     * @var Client
+     */
     private $guzzleClient;
 
+    /**
+     * @var \Katzgrau\KLogger\Logger
+     */
+    private $log;
+
+    /**
+     * @param DragonpayClient $client
+     */
     public function __construct(DragonpayClient $client)
     {
         $this->client = $client;
         $this->guzzleClient = new Client();
+
+        if ($this->client->isLoggingEnabled()) {
+            $this->log = $this->client->getLogger();
+        }
     }
 
     /**
@@ -28,6 +52,13 @@ class Transaction
      */
     public function statusInquiry($transactionId)
     {
+        if ($this->client->isLoggingEnabled()) {
+            $this->log->info(
+                "[dragonpay-sdk][transaction-status-inquiry] Inquiring the "
+                . "status of Transaction ID {$transactionId}"
+            );
+        }
+
         $response = $this->guzzleClient->get($this->testUrl, [
             'query' => [
                 'op'          => 'GETSTATUS',
@@ -37,9 +68,26 @@ class Transaction
             ],
         ]);
 
-        $code = $response->getBody();
+        $responseBody = $response->getBody();
 
-        return $this->parseStatusCode($code);
+        $status = $this->parseStatusCode($responseBody);
+
+        if ($this->client->isLoggingEnabled()) {
+            if ($status == 'Error') {
+                $this->log->error(
+                    "[dragonpay-sdk][transaction-status-inquiry] "
+                    . "Status inquiry error - Transaction ID "
+                    . "{$transactionId}: {$responseBody}"
+                );
+            } else {
+                $this->log->info(
+                    "[dragonpay-sdk][transaction-status-inquiry] "
+                    . "Transaction ID {$transactionId} received the status of: $status"
+                );
+            }
+        }
+
+        return $status;
     }
 
     /**
@@ -50,44 +98,91 @@ class Transaction
      */
     public function cancel($transactionId)
     {
+        if ($this->client->isLoggingEnabled()) {
+            $this->log->info(
+                "[dragonpay-sdk][transaction-cancellation] Cancelling Transaction"
+                . " ID {$transactionId}"
+            );
+        }
+
         $response = $this->guzzleClient->get($this->testUrl, [
             'query' => [
-                'op'          => 'VOID',
+                'op'          => 'VOID123',
                 'merchantid'  => $this->client->getMerchantId(),
                 'merchantpwd' => $this->client->getMerchantPassword(),
                 'txnid'       => $transactionId
             ],
         ]);
 
-        $code = $response->getBody();
+        $responseBody = $response->getBody();
 
-        return $this->parseCancellationStatusCode($code);
+        $status = $this->parseCancellationStatusCode($responseBody);
+
+        if ($this->client->isLoggingEnabled()) {
+            if ($status == 'Error') {
+                $this->log->error(
+                    "[dragonpay-sdk][transaction-cancellation] "
+                    . "Cancellation of Transaction ID "
+                    . "{$transactionId} error: {$responseBody}"
+                );
+            } else {
+                $this->log->info(
+                    "[dragonpay-sdk][transaction-cancellation] "
+                    . "Transaction ID {$transactionId} cancellation status: {$status}"
+                );
+            }
+        }
+
+        return $status;
     }
 
     /**
-     * Check if a transaction is successful.
+     * Checks if a transaction is successful.
      *
-     * @param $message
-     * @param $digest
-     * @param $statusCode
+     * @param array $data
      * @return bool
      */
-    public function isSuccessful($message, $digest, $statusCode)
+    public function isSuccessful(array $data)
     {
-        $status = $this->parseStatusCode($statusCode);
+        $status = $this->parseStatusCode($data['status']);
 
-        return sha1($message) == $digest && $status == 'Success';
+        if (sha1($data['message']) == $data['digest'] && $status == 'Success') {
+            if ($this->client->isLoggingEnabled()) {
+                $this->log->info(
+                    "[dragonpay-sdk][transaction-response] Transaction ID "
+                    . "{$data['transactionId']} with refno {$data['refno']} returned"
+                    . "a status of success."
+                );
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
+
     /**
-     * Check if a transaction fails.
+     * Checks if a transaction fails.
      *
-     * @param $statusCode
+     * @param array $data
      * @return bool
      */
-    public function fails($statusCode)
+    public function fails(array $data)
     {
-        return $this->parseStatusCode($statusCode) == 'Failure';
+        if ($this->parseStatusCode($data['status']) == 'Failure') {
+            if ($this->client->isLoggingEnabled()) {
+                $this->log->error(
+                    "[dragonpay-sdk][transaction-response] Transaction ID "
+                    . "{$data['transactionId']} with refno {$data['refno']} returned"
+                    . " a status of failure."
+                );
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -98,8 +193,6 @@ class Transaction
      */
     public function parseStatusCode($code)
     {
-        $status = '';
-
         switch ($code) {
             case 'S':
                 $status = 'Success';
@@ -125,6 +218,9 @@ class Transaction
             case 'A':
                 $status = 'Authorized';
                 break;
+            default:
+                $status = 'Error';
+                break;
         }
 
         return $status;
@@ -142,8 +238,11 @@ class Transaction
             case '0':
                 return 'Success';
                 break;
-            default:
+            case '-1':
                 return 'Failed';
+                break;
+            default:
+                return 'Error';
                 break;
         }
     }

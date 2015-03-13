@@ -10,25 +10,33 @@ $merchantId = '123456';
 $secretKey = 'secret';
 $password = 'password';
 
-$client = new DragonpayClient($merchantId, $secretKey, $password);
+$logging = true;
+$logDirectory = 'logs/';
+
+$client = new DragonpayClient($merchantId, $secretKey, $password, $logging, $logDirectory);
 
 # Getting the URL to Payment Switch
 
 use Coreproc\Dragonpay\Classes\Checkout;
+use Coreproc\Dragonpay\Classes\ValidationException;
 
 $checkout = new Checkout($client);
 
 // Form data from merchant site
 $data = array(
     'transactionId' => '12345',
-    'amount'        => 20499.99,
+    'amount'        => 12345,
     'currency'      => 'PHP',
     'description'   => 'PS4',
     'email'         => 'john@example.com',
 );
 
 // Get the generated URL
-$url = $checkout->getUrl($data);
+try {
+    $url = $checkout->getUrl($data);
+} catch (ValidationException $e) {
+    var_dump($e->getErrors());
+}
 
 echo("URL to Dragonpay PS: " . $url . '<br><hr>');
 
@@ -41,24 +49,25 @@ use Coreproc\Dragonpay\Classes\Transaction;
 $data2 = array(
     'transactionId' => '987654',
     'refno'         => '123456',
-    'status'        => 'K', // Result of payment
-    'message'       => 'Blah blah', // Success: PG Trans. Refno, Failure: Error codes, Pending: Refno to complete funding
+    'status'        => 'F', // Result of payment
+    'message'       => 101, // Success: PG Trans. Refno, Failure: Error codes, Pending: Refno to complete funding
     'digest'        => '12345678987654321',
 );
 
-$transaction = new Transaction($client);
+$transaction = new Transaction($client, $logging, $logDirectory);
 
 // Check if transaction is successful
-if ($transaction->isSuccessful($data2['message'], $data2['digest'], $data2['status'])) {
+//if ($transaction->isSuccessful($data2['message'], $data2['digest'], $data2['status'])) {
+if ($transaction->isSuccessful($data2)) {
     // Proceed to shipping
     echo 'Transaction is successful. Proceed to shipment of the order';
 } else {
     // Abort processing?
 
     // If status is failed, message would be an error code
-    if ($transaction->fails($data2['status'])) {
+    if ($transaction->fails($data2)) {
         $error = $transaction->parseErrorCode($data2['message']);
-        echo 'Error in transaction: ' . $error;
+        echo 'Error in transaction: ' . $error . '<br>';
     }
 
     // Handle other status here
@@ -71,7 +80,7 @@ echo '<hr>';
 
 # Transaction status inquiry
 
-$transaction = new Transaction($client);
+$transaction = new Transaction($client, true, $logDirectory);
 
 $transactionId = 12345;
 
@@ -80,6 +89,8 @@ $status = $transaction->statusInquiry($transactionId);
 echo 'Transaction status: ' . $status . '<br>' . '<hr>';
 
 # Transaction cancellation
+
+$transaction = new Transaction($client, true, $logDirectory);
 
 $transactionId = 12345;
 
