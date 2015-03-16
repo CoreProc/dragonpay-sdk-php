@@ -37,10 +37,12 @@ class PaymentSwitchURLGenerator
             $params .= '%26param1=' . urlencode($data['param1']);
         }
 
+        // OPTIONAL: values to be posted back to merchant url when completed
         if (isset($data['param2'])) {
             $params .= '%26param2=' . urlencode($data['param2']);
         }
 
+        // Append generated digest
         $params .= '&digest=' . urlencode($data['digest']);
 
         $url = "$this->testUrl?$params";

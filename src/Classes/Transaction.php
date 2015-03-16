@@ -32,6 +32,16 @@ class Transaction
     private $log;
 
     /**
+     * @var string Status of a transaction
+     */
+    private $status;
+
+    /**
+     * @var string Error of a transaction
+     */
+    private $error;
+
+    /**
      * @param DragonpayClient $client
      */
     public function __construct(DragonpayClient $client)
@@ -44,6 +54,16 @@ class Transaction
         }
     }
 
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    public function getError()
+    {
+        return $this->error;
+    }
+
     /**
      * Inquire for the status of transaction.
      *
@@ -53,10 +73,9 @@ class Transaction
     public function statusInquiry($transactionId)
     {
         if ($this->client->isLoggingEnabled()) {
-            $this->log->info(
-                "[dragonpay-sdk][transaction-status-inquiry] Inquiring the "
-                . "status of Transaction ID {$transactionId}"
-            );
+            $logMessage = "[dragonpay-sdk][transaction-status-inquiry] "
+                . "Inquiring the status of Transaction ID {$transactionId}";
+            $this->log->info($logMessage);
         }
 
         $response = $this->guzzleClient->get($this->testUrl, [
@@ -74,16 +93,14 @@ class Transaction
 
         if ($this->client->isLoggingEnabled()) {
             if ($status == 'Error') {
-                $this->log->error(
-                    "[dragonpay-sdk][transaction-status-inquiry] "
+                $logMessage = "[dragonpay-sdk][transaction-status-inquiry] "
                     . "Status inquiry error - Transaction ID "
-                    . "{$transactionId}: {$responseBody}"
-                );
+                    . "{$transactionId}: {$responseBody}";
+                $this->log->error($logMessage);
             } else {
-                $this->log->info(
-                    "[dragonpay-sdk][transaction-status-inquiry] "
-                    . "Transaction ID {$transactionId} received the status of: $status"
-                );
+                $logMessage = "[dragonpay-sdk][transaction-status-inquiry] "
+                    . "Transaction ID {$transactionId} received the status of: {$status}";
+                $this->log->info($logMessage);
             }
         }
 
@@ -99,10 +116,9 @@ class Transaction
     public function cancel($transactionId)
     {
         if ($this->client->isLoggingEnabled()) {
-            $this->log->info(
-                "[dragonpay-sdk][transaction-cancellation] Cancelling Transaction"
-                . " ID {$transactionId}"
-            );
+            $logMessage = "[dragonpay-sdk][transaction-cancellation] Cancelling"
+                . " Transaction ID {$transactionId}";
+            $this->log->info($logMessage);
         }
 
         $response = $this->guzzleClient->get($this->testUrl, [
@@ -120,16 +136,14 @@ class Transaction
 
         if ($this->client->isLoggingEnabled()) {
             if ($status == 'Error') {
-                $this->log->error(
-                    "[dragonpay-sdk][transaction-cancellation] "
+                $logMessage = "[dragonpay-sdk][transaction-cancellation] "
                     . "Cancellation of Transaction ID "
-                    . "{$transactionId} error: {$responseBody}"
-                );
+                    . "{$transactionId} error: {$responseBody}";
+                $this->log->error($logMessage);
             } else {
-                $this->log->info(
-                    "[dragonpay-sdk][transaction-cancellation] "
-                    . "Transaction ID {$transactionId} cancellation status: {$status}"
-                );
+                $logMessage = "[dragonpay-sdk][transaction-cancellation] "
+                    . "Transaction ID {$transactionId} cancellation status: {$status}";
+                $this->log->info($logMessage);
             }
         }
 
@@ -146,13 +160,16 @@ class Transaction
     {
         $status = $this->parseStatusCode($data['status']);
 
-        if (sha1($data['message']) == $data['digest'] && $status == 'Success') {
+        $this->status = $status;
+
+        $digest = $this->generateDigest($data);
+
+        if ($digest == $data['digest'] && $status == 'Success') {
             if ($this->client->isLoggingEnabled()) {
-                $this->log->info(
-                    "[dragonpay-sdk][transaction-response] Transaction ID "
+                $logMessage = "[dragonpay-sdk][transaction-response] Transaction ID "
                     . "{$data['transactionId']} with refno {$data['refno']} returned"
-                    . "a status of success."
-                );
+                    . "a status of success.";
+                $this->log->info($logMessage);
             }
 
             return true;
@@ -170,14 +187,17 @@ class Transaction
      */
     public function fails(array $data)
     {
-        if ($this->parseStatusCode($data['status']) == 'Failure') {
+        $status = $this->parseStatusCode($data['status']);
+
+        if ($status == 'Failure') {
             if ($this->client->isLoggingEnabled()) {
-                $this->log->error(
-                    "[dragonpay-sdk][transaction-response] Transaction ID "
+                $logMessage = "[dragonpay-sdk][transaction-response] Transaction ID "
                     . "{$data['transactionId']} with refno {$data['refno']} returned"
-                    . " a status of failure."
-                );
+                    . " a status of failure.";
+                $this->log->error($logMessage);
             }
+
+            $this->error = $this->parseErrorCode($data['message']);
 
             return true;
         }
@@ -191,7 +211,7 @@ class Transaction
      * @param $code
      * @return string
      */
-    public function parseStatusCode($code)
+    private function parseStatusCode($code)
     {
         switch ($code) {
             case 'S':
@@ -253,7 +273,7 @@ class Transaction
      * @param $code
      * @return string
      */
-    public function parseErrorCode($code)
+    private function parseErrorCode($code)
     {
         $error = '';
 
@@ -303,6 +323,18 @@ class Transaction
         }
 
         return $error;
+    }
+
+    /**
+     * @param $data
+     * @return string
+     */
+    private function generateDigest($data)
+    {
+        $message = "{$data['transactionId']}:{$data['refno']}:{$data['status']}"
+            . ":{$data['message']}:{$this->client->getSecretKey()}";
+
+        return sha1($message);
     }
 
 }

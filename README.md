@@ -33,19 +33,34 @@ Once you've downloaded the composer.phar file, continue with your installation b
     
     use Coreproc\Dragonpay\DragonpayClient;
     
+    // Merchant Credentials
     $merchantId = '123456';
     $secretKey = 'secret';
     $password = 'password';
     
-    $client = new DragonpayClient($merchantId, $secretKey, $password);
+    // Enable logging
+    $logging = true; // true/false. false by default
+    $logDirectory = 'logs/'; // can be left off if logging is false
     
-### Getting the URL to Payment Switch
+    $client = new DragonpayClient($merchantId, $secretKey, $password, $logging, $logDirectory);
+    
+### Getting the URL to the Payment Switch API
 
     use Coreproc\Dragonpay\Classes\Checkout;
     
     $checkout = new Checkout($client);
     
     // Form data from merchant site
+    //
+    // Params:
+    // merchantid - Unique code assigned to Merchant. (Getter available from the client)
+    // txnid - A unique ID identifying this specific transaction from the merchant side.
+    // amount - The amount to get from the end-user (XXXX.XX)
+    // ccy - The currency of the amout (PHP/USD)
+    // description - A brief description of what the payment is for
+    // email - E-mail address of the customer
+    // digest - A sha1 digest of all the params along with the secret key
+    // param1 & param2 - (Optional) Value to be posted back to the merchant url when completed
     $data = array(
         'transactionId' => '12345',
         'amount'        => 20499.99,
@@ -57,38 +72,45 @@ Once you've downloaded the composer.phar file, continue with your installation b
     // Get the generated URL
     $url = $checkout->getUrl($data);
 
-
 ### Handling the response
 
     use Coreproc\Dragonpay\Classes\Transaction;
 
     // Request data from PS API
-    // params: txnid, refno, status, message, digest
+    //
+    // Params:
+    // txnid - Unique ID identifying this specific transaction from the merchant side.
+    // refno - Common reference number identifying this specific transaction from the PS side.
+    // status - Result of the payment. (Refer to Appendix 3 of the docs for codes)
+    // message - If status is SUCCESS, this should be the PG transaction reference number.
+    // if status is FAILURE, return one of the error codes (refer to Appendix 2 of the docs)
+    // if status is PENDING, this would be a reference number to complete the funding.
+    // digest - sha1 checksum digest of the params along with the secret key.
     $data2 = array(
         'transactionId' => '987654',
         'refno'         => '123456',
-        'status'        => 'K', // Result of payment
-        'message'       => 'Blah blah', // Success: PG Trans. Refno, Failure: Error codes, Pending: Refno to complete funding
+        'status'        => 'F', // Failure
+        'message'       => 101, // Invalid payment gateway ID
         'digest'        => '12345678987654321',
     );
-
+    
     $transaction = new Transaction($client);
 
     // Check if transaction is successful
-    if ($transaction->isSuccessful($data2['message'], $data2['digest'], $data2['status'])) {
+    if ($transaction->isSuccessful($data2)) {
         // Proceed to shipping
         echo 'Transaction is successful. Proceed to shipment of the order';
     } else {
-        // Abort processing?
+        // Abort processing
 
         // If status is failed, message would be an error code
-        if ($transaction->fails($data2['status'])) {
-            $error = $transaction->parseErrorCode($data2['message']);
-            echo 'Error in transaction: ' . $error;
+        if ($transaction->fails($data2)) {
+            $error = $transaction->getError();
+            echo 'Error in transaction: ' . $error . '<br>';
         }
 
         // Handle other status here
-        $status = $transaction->parseStatusCode($data2['status']);
+        $status = $transaction->getStatus();
 
         echo 'Transaction status: ' . $status;
     }
@@ -105,6 +127,8 @@ Once you've downloaded the composer.phar file, continue with your installation b
 
 ### Transaction cancellation
 
+    $transaction = new Transaction($client);
+    
     $transactionId = 12345;
 
     $status = $transaction->cancel($transactionId);

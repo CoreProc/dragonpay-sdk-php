@@ -18,9 +18,9 @@ class Checkout
     private $generator;
 
     /**
-     * @var \Katzgrau\KLogger\Logger
+     * @var null|\Katzgrau\KLogger\Logger
      */
-    private $log;
+    private $log = null;
 
     public function __construct(DragonpayClient $client)
     {
@@ -44,17 +44,17 @@ class Checkout
         $data['secretKey'] = $this->client->getSecretKey();
 
         if ($this->client->isLoggingEnabled()) {
-            $this->log->info(
-                '[dragonpay-sdk][url-generation] Generating URL to Payment Switch API.'
-            );
+            $logMessage = '[dragonpay-sdk][url-generation] Generating URL to '
+                . 'Payment Switch API.';
+            $this->log->info($logMessage);
         }
 
         $url = $this->generator->generate($data);
 
         if ($url && $this->client->isLoggingEnabled()) {
-            $this->log->info(
-                '[dragonpay-sdk][url-generation] Successfully generated URL to Payment Switch API.'
-            );
+            $logMessage = '[dragonpay-sdk][url-generation] Successfully '
+                . 'generated URL to Payment Switch API.';
+            $this->log->info($logMessage);
         }
 
         return $url;

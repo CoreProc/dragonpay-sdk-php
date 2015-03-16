@@ -7,12 +7,24 @@ use Katzgrau\KLogger\Logger;
 class DragonpayClient
 {
 
+    /**
+     * @var int Merchant ID
+     */
     private $merchantId;
 
+    /**
+     * @var string Merchant Secret Key
+     */
     private $secretKey;
 
+    /**
+     * @var string Merchant Password
+     */
     private $merchantPassword;
 
+    /**
+     * @var bool Enable/disable logging
+     */
     private $logging = false;
 
     /**
@@ -38,7 +50,8 @@ class DragonpayClient
                 $this->logging = true;
                 $this->logger = new Logger($logDirectory);
             } else {
-                die('Please make sure that you set a valid log directory to enable logging.');
+                $message = 'Please make sure that you set a valid log directory to enable logging.';
+                die($message);
             }
         }
     }
@@ -58,16 +71,14 @@ class DragonpayClient
         return $this->merchantPassword;
     }
 
-    public function isLoggingEnabled()
-    {
-        return $this->logging;
-    }
-
     public function getLogger()
     {
         return $this->logger;
     }
 
+    public function isLoggingEnabled()
+    {
+        return $this->logging;
+    }
+
 }
-
-
