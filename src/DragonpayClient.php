@@ -9,10 +9,10 @@ class DragonpayClient
 
     private $merchantPassword;
 
-    public function __construct(array $merchantCredentials, $logging = false, $logDirectory = null)
+    public function __construct(array $credentials, $logging = false, $logDirectory = null)
     {
-        $this->merchantId = $merchantCredentials['merchantId'];
-        $this->merchantPassword = $merchantCredentials['merchantPassword'];
+        $this->merchantId = $credentials['merchantId'];
+        $this->merchantPassword = $credentials['merchantPassword'];
     }
 
     /**
