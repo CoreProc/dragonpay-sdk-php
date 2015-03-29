@@ -31,6 +31,8 @@ Once you've downloaded the composer.phar file, continue with your installation b
 
     require '../vendor/autoload.php';
 
+    use Coreproc\Dragonpay\DragonpayClient;
+
     // Set the merchant credentials
     $credentials = [
         'merchantId'        => 'merchant-id',
@@ -41,12 +43,16 @@ Once you've downloaded the composer.phar file, continue with your installation b
     $logDirectory = 'logs'; // Leave off if logging is false
 
     // Instantiate the client
-    $client = new \Coreproc\Dragonpay\DragonpayClient($credentials);
+    $client = new DragonpayClient($credentials);
 
 ### Checkout
 
+    use Coreproc\Dragonpay\Classes\Checkout;
+
     // Pass in the client instance and preferred web service (REST/SOAP); REST by default.
-    $checkout = new \Coreproc\Dragonpay\Classes\Checkout($client);
+    $webService = 'SOAP';
+
+    $checkout = new Checkout($client, $webService);
 
     // Transaction specific parameters
     // REST service params
@@ -59,16 +65,15 @@ Once you've downloaded the composer.phar file, continue with your installation b
     ];
 
     // SOAP service params
-    //$params [
-    //    'merchantTxnId' => '12345672912345672907',
-    //    'amount'        => 20000.99,
-    //    'ccy'           => 'PHP',
-    //    'description'   => 'Playstation 4',
-    //];
+    $params [
+        'transactionId' => '12345672912345672907',
+        'amount'        => 20000.99,
+        'currency'      => 'PHP',
+        'description'   => 'Playstation 4',
+    ];
 
     // For getting the URL to PS
-    //$url = $checkout->getURL($params);
-    //var_dump($url);
+    $url = $checkout->getURL($params);
 
     // For redirecting to PS
     $checkout->redirect($params);
