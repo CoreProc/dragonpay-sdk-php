@@ -27,6 +27,8 @@ class SOAPURLGenerator implements URLGeneratorInterface
     {
         $soapClient = new SoapClient($this->webServiceURL);
 
+        $params = $this->setParamKeys($params);
+
         $response = $soapClient->__soapCall('GetTxnToken', [$params]);
 
         $tokenId = $response->GetTxnTokenResult;
@@ -34,6 +36,17 @@ class SOAPURLGenerator implements URLGeneratorInterface
         $url = $this->basePaymentURL . "?tokenid={$tokenId}";
 
         return $url;
+    }
+
+    private function setParamKeys(array $params)
+    {
+        $params['merchantTxnId'] = $params['transactionId'];
+        $params['ccy'] = $params['currency'];
+
+        unset($params['transactionId']);
+        unset($params['currency']);
+
+        return $params;
     }
 
 }
