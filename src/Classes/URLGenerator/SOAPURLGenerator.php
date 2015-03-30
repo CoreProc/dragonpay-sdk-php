@@ -23,6 +23,12 @@ class SOAPURLGenerator implements URLGeneratorInterface
      */
     private $webServiceURL = 'http://test.dragonpay.ph/DragonPayWebService/MerchantService.asmx?WSDL';
 
+    /**
+     * Generate the URL to Dragonpay Payment Switch.
+     *
+     * @param $params
+     * @return string
+     */
     public function generate($params)
     {
         $soapClient = new SoapClient($this->webServiceURL);
@@ -38,6 +44,12 @@ class SOAPURLGenerator implements URLGeneratorInterface
         return $url;
     }
 
+    /**
+     * Set the parameter keys required by the Dragonpay Payment Switch.
+     *
+     * @param array $params
+     * @return array
+     */
     private function setParamKeys(array $params)
     {
         $params['merchantTxnId'] = $params['transactionId'];

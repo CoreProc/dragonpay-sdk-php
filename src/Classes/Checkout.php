@@ -20,7 +20,10 @@ class Checkout
     }
 
     /**
-     * Get the URL to the Dragonpay Payment Switch API.
+     * Get the generated URL to the Dragonpay Payment Switch API.
+     *
+     * @param array $params
+     * @return string
      */
     public function getURL(array $params)
     {
@@ -30,6 +33,9 @@ class Checkout
         return $this->urlGenerator->generate($params);
     }
 
+    /**
+     * @param array $params
+     */
     public function redirect(array $params)
     {
         $url = $this->getURL($params);
