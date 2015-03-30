@@ -32,12 +32,25 @@ class Transaction
      *
      * @param $transactionId
      * @return string
+     * @TODO Clean up logging
      */
     public function inquire($transactionId)
     {
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][transaction-inquiry] Inquiring status of Transaction ID {$transactionId}";
+            $this->client->getLogger()->info($logMessage);
+        }
+
         $code = $this->merchantService->inquire($this->credentials, $transactionId);
 
-        return $this->parseTransactionStatusCode($code);
+        $status = $this->parseTransactionStatusCode($code);
+
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][transaction-inquiry] Status inquiry of Transaction ID {$transactionId} returned the status of \"{$status}\".";
+            $this->client->getLogger()->info($logMessage);
+        }
+
+        return $status;
     }
 
     /**
@@ -45,12 +58,25 @@ class Transaction
      *
      * @param $transactionId
      * @return string
+     * @TODO Clean up logging
      */
     public function cancel($transactionId)
     {
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][transaction-cancellation] Transaction ID {$transactionId} is being cancelled.";
+            $this->client->getLogger()->info($logMessage);
+        }
+
         $code = $this->merchantService->cancel($this->credentials, $transactionId);
 
-        return $this->parseTransactionCancellationStatusCode($code);
+        $status = $this->parseTransactionCancellationStatusCode($code);
+
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][transaction-cancellation] Cancellation of Transaction ID {$transactionId} returned the status of \"{$status}\".";
+            $this->client->getLogger()->info($logMessage);
+        }
+
+        return $status;
     }
 
     /**
