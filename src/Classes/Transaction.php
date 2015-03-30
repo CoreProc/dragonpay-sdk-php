@@ -94,6 +94,34 @@ class Transaction
         return $status;
     }
 
+    public function isSuccessful(array $params)
+    {
+        $responseDigest = $this->generateResponseDigest($params);
+
+        $status = $this->parseTransactionStatusCode($params['status']);
+
+        if ($responseDigest == $params['digest'] && $status == 'Success') {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function generateResponseDigest($params)
+    {
+        $string = sprintf(
+            '%s:%s:%s,%s,%s',
+            $params['transactionId'],
+            $params['referenceNumber'],
+            $params['status'],
+            $params['message'],
+            $this->client->getMerchantPassword()
+        );
+
+        return sha1($string);
+
+    }
+
     /**
      * Parse the status code response of the transaction inquiry.
      *
