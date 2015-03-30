@@ -23,10 +23,11 @@ class Checkout
      * Get the generated URL to the Dragonpay Payment Switch API.
      *
      * @param array $params
+     * @param null $filter
      * @return string
      * @TODO Clean up logging
      */
-    public function getURL(array $params)
+    public function getURL(array $params, $filter = null)
     {
         $params['merchantId'] = $this->client->getMerchantId();
         $params['password'] = $this->client->getMerchantPassword();
@@ -43,17 +44,59 @@ class Checkout
             $this->client->getLogger()->info($logMessage);
         }
 
+        if ($filter !== null) {
+            $url = $this->addFilter($url, $filter);
+        }
+
         return $url;
     }
 
     /**
      * @param array $params
+     * @param $filter
      */
-    public function redirect(array $params)
+    public function redirect(array $params, $filter = null)
     {
-        $url = $this->getURL($params);
+        $url = $this->getURL($params, $filter);
 
         header("Location:{$url}");
+    }
+
+    private function addFilter($url, $filter)
+    {
+        switch ($filter) {
+            case 'online_banking':
+                $filter = '&mode=1';
+                break;
+            case 'otc_non_bank':
+                $filter = '&mode=2';
+                break;
+            case 'paypal':
+                $filter = '&mode=32';
+                break;
+            case 'credit_card':
+                $filter = '&mode=64';
+                break;
+            case 'mobile':
+                $filter = '&mode=128';
+                break;
+            case 'international_otc':
+                $filter = '&mode=256';
+                break;
+            case 'gcash_direct':
+                $filter = '&procid=GCSH';
+                break;
+            case 'credit_card_direct':
+                $filter = '&procid=CC';
+                break;
+            case 'paypal_direct':
+                $filter = '&procid=PYPL';
+                break;
+        }
+
+        $url = $url . $filter;
+
+        return $url;
     }
 
 }
