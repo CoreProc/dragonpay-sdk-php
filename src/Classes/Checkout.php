@@ -3,7 +3,7 @@
 namespace Coreproc\Dragonpay\Classes;
 
 use Coreproc\Dragonpay\DragonpayClient;
-use Coreproc\Dragonpay\Classes\URLGenerator\URLGeneratorFactory;
+use Coreproc\Dragonpay\Classes\URLGenerator\UrlGeneratorFactory;
 
 class Checkout
 {
@@ -16,7 +16,7 @@ class Checkout
     public function __construct(DragonpayClient $client, $webService = 'REST')
     {
         $this->client = $client;
-        $this->urlGenerator = URLGeneratorFactory::create($webService);
+        $this->urlGenerator = UrlGeneratorFactory::create($webService);
     }
 
     /**

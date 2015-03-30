@@ -1,10 +1,10 @@
 <?php
 
-namespace Coreproc\Dragonpay\Classes\URLGenerator;
+namespace Coreproc\Dragonpay\Classes\UrlGenerator;
 
 use SoapClient;
 
-class SOAPURLGenerator implements URLGeneratorInterface
+class SoapUrlGenerator implements UrlGeneratorInterface
 {
 
     /**

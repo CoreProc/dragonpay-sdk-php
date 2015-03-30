@@ -1,23 +1,23 @@
 <?php
 
-namespace Coreproc\Dragonpay\Classes\URLGenerator;
+namespace Coreproc\Dragonpay\Classes\UrlGenerator;
 
-class URLGeneratorFactory
+class UrlGeneratorFactory
 {
 
     /**
      * @param $webService
-     * @return RESTURLGenerator|SOAPURLGenerator
+     * @return RestUrlGenerator|SoapUrlGenerator
      */
     public static function create($webService)
     {
         switch ($webService) {
             case 'SOAP':
-                return new SOAPURLGenerator();
+                return new SoapUrlGenerator();
                 break;
             case 'REST':
             default:
-                return new RESTURLGenerator();
+                return new RestUrlGenerator();
                 break;
         }
     }

@@ -1,8 +1,8 @@
 <?php
 
-namespace Coreproc\Dragonpay\Classes\URLGenerator;
+namespace Coreproc\Dragonpay\Classes\UrlGenerator;
 
-interface URLGeneratorInterface
+interface UrlGeneratorInterface
 {
 
     /**
