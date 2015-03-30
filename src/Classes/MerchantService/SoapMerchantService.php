@@ -24,15 +24,12 @@ class SoapMerchantService implements MerchantServiceInterface
      * Inquire for a transaction's status.
      *
      * @param array $credentials
+     * @param $transactionId
      * @return mixed
      */
-    public function inquire(array $credentials)
+    public function inquire(array $credentials, $transactionId)
     {
-        $params = [
-            'merchantId' => $credentials['merchantId'],
-            'password'   => $credentials['merchantPassword'],
-            'txnId'      => $credentials['transactionId'],
-        ];
+        $params = $this->setParams($credentials, $transactionId);
 
         $response = $this->SOAPClient->__soapCall('GetTxnStatus', [$params]);
 
@@ -43,19 +40,31 @@ class SoapMerchantService implements MerchantServiceInterface
      * Cancel a transaction.
      *
      * @param array $credentials
+     * @param $transactionId
      * @return mixed
      */
-    public function cancel(array $credentials)
+    public function cancel(array $credentials, $transactionId)
     {
-        $params = [
-            'merchantId' => $credentials['merchantId'],
-            'password'   => $credentials['merchantPassword'],
-            'txnId'      => $credentials['transactionId'],
-        ];
+        $params = $this->setParams($credentials, $transactionId);
 
         $response = $this->SOAPClient->__soapCall('CancelTransaction', [$params]);
 
         return $response->CancelTransactionResult;
+    }
+
+    /**
+     * @param array $credentials
+     * @return array
+     */
+    private function setParams(array $credentials, $transactionId)
+    {
+        $params = [
+            'merchantId' => $credentials['merchantId'],
+            'password'   => $credentials['merchantPassword'],
+            'txnId'      => $transactionId,
+        ];
+
+        return $params;
     }
 
 }
