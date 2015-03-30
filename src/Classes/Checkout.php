@@ -30,7 +30,19 @@ class Checkout
         $params['merchantId'] = $this->client->getMerchantId();
         $params['password'] = $this->client->getMerchantPassword();
 
-        return $this->urlGenerator->generate($params);
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][url-generation] Generating URL to Dragonpay Payment Switch.";
+            $this->client->getLogger()->info($logMessage);
+        }
+
+        $url = $this->urlGenerator->generate($params);
+
+        if ($url && $this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][url-generation] Successfully generated URL to Dragonpay Payment Switch. URL: \"{$url}\"";
+            $this->client->getLogger()->info($logMessage);
+        }
+
+        return $url;
     }
 
     /**
