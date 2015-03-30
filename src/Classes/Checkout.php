@@ -3,7 +3,7 @@
 namespace Coreproc\Dragonpay\Classes;
 
 use Coreproc\Dragonpay\DragonpayClient;
-use Coreproc\Dragonpay\Classes\URLGenerator\UrlGeneratorFactory;
+use Coreproc\Dragonpay\Classes\UrlGenerator\UrlGeneratorFactory;
 
 class Checkout
 {
