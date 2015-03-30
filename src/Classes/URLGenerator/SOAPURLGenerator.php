@@ -13,7 +13,7 @@ class SoapUrlGenerator implements UrlGeneratorInterface
      * @var string
      * @TODO Put this in a config file
      */
-    private $basePaymentURL = 'http://test.dragonpay.ph/Pay.aspx';
+    private $basePaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
 
     /**
      * Dragonpay Web Service URL
@@ -39,7 +39,7 @@ class SoapUrlGenerator implements UrlGeneratorInterface
 
         $tokenId = $response->GetTxnTokenResult;
 
-        $url = $this->basePaymentURL . "?tokenid={$tokenId}";
+        $url = $this->basePaymentUrl . "?tokenid={$tokenId}";
 
         return $url;
     }

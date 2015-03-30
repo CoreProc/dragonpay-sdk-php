@@ -11,11 +11,11 @@ class RestUrlGenerator implements UrlGeneratorInterface
      * @var string
      * @TODO Put this in a config file
      */
-    private $basePaymentURL = 'http://test.dragonpay.ph/Pay.aspx';
+    private $basePaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
 
     public function generate($params)
     {
-        $data['digest'] = $this->generateDigest($params);
+        $digest = $this->generateDigest($params);
 
         $queryString = 'merchantid=' . urlencode($params['merchantId'])
             . '&txnid=' . urlencode($params['transactionId'])
@@ -37,9 +37,9 @@ class RestUrlGenerator implements UrlGeneratorInterface
         }
 
         // Append generated digest
-        $queryString .= '&digest=' . urlencode($data['digest']);
+        $queryString .= '&digest=' . urlencode($digest);
 
-        $url = "$this->basePaymentURL?$queryString";
+        $url = "$this->basePaymentUrl?$queryString";
 
         return $url;
     }
@@ -47,7 +47,7 @@ class RestUrlGenerator implements UrlGeneratorInterface
     /**
      * Generate a digest to be appended to the generated URL's params.
      *
-     * @param array $data
+     * @param array $params
      * @return string
      */
     private function generateDigest(array $params)
