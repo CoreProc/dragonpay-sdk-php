@@ -1,10 +1,10 @@
 <?php
 
-namespace Coreproc\Dragonpay\Classes\Transaction;
+namespace Coreproc\Dragonpay\Classes\MerchantService;
 
 use SoapClient;
 
-class SOAPTransaction implements TransactionInterface
+class SoapMerchantService implements MerchantServiceInterface
 {
 
     /**
@@ -20,6 +20,12 @@ class SOAPTransaction implements TransactionInterface
         $this->SOAPClient = new SoapClient($this->webServiceURL);
     }
 
+    /**
+     * Inquire for a transaction's status.
+     *
+     * @param array $credentials
+     * @return mixed
+     */
     public function inquire(array $credentials)
     {
         $params = [
@@ -33,6 +39,12 @@ class SOAPTransaction implements TransactionInterface
         return $response->GetTxnStatusResult;
     }
 
+    /**
+     * Cancel a transaction.
+     *
+     * @param array $credentials
+     * @return mixed
+     */
     public function cancel(array $credentials)
     {
         $params = [
