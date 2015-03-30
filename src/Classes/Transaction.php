@@ -146,12 +146,7 @@ class Transaction
      */
     private function parseStatusCode($code)
     {
-        if ($code == 0) {
-            return 'Success';
-        }
-
-        return 'Failed';
-
+        return $code == 0 ? 'Success' : 'Failed';
     }
 
     /**
