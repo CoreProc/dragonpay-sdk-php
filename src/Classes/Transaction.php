@@ -69,12 +69,27 @@ class Transaction
 
         $code = $this->merchantService->cancel($this->credentials, $transactionId);
 
-        $status = $this->parseTransactionCancellationStatusCode($code);
+        $status = $this->parseStatusCode($code);
 
         if ($this->client->isLoggingEnabled()) {
             $logMessage = "[dragonpay-sdk][transaction-cancellation] Cancellation of Transaction ID {$transactionId} returned the status of \"{$status}\".";
             $this->client->getLogger()->info($logMessage);
         }
+
+        return $status;
+    }
+
+    /**
+     * @param array $params
+     * @return mixed
+     */
+    public function sendBillingInformation(array $params)
+    {
+        $merchantId = $this->client->getMerchantId();
+
+        $code = $this->merchantService->sendBillingInformation($merchantId, $params);
+
+        $status = $this->parseStatusCode($code);
 
         return $status;
     }
@@ -122,13 +137,14 @@ class Transaction
     }
 
     /**
-     * Parse the status code response of the transaction cancellation.
+     * Return the string representation of a transaction cancellation/sending of
+     * billing information's status code.
      *
      * @param $code
      * @return string
      * @TODO Make a parser class?
      */
-    private function parseTransactionCancellationStatusCode($code)
+    private function parseStatusCode($code)
     {
         if ($code == 0) {
             return 'Success';

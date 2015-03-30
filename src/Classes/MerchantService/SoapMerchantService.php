@@ -4,7 +4,7 @@ namespace Coreproc\Dragonpay\Classes\MerchantService;
 
 use SoapClient;
 
-class SoapMerchantService implements MerchantServiceInterface
+class SoapMerchantService implements MerchantServiceInterface, BillingServiceInterface
 {
 
     /**
@@ -53,6 +53,28 @@ class SoapMerchantService implements MerchantServiceInterface
     }
 
     /**
+     * Send billing information of customer's billing address to the Dragonpay
+     * Payment Switch API for additional fraud checking.
+     *
+     * @param $merchantId
+     * @param array $params
+     * @return mixed
+     */
+    public function sendBillingInformation($merchantId, array $params)
+    {
+        $params['merchantId'] = $merchantId;
+        $params['merchantTxnId'] = $params['transactionId'];
+
+        unset($params['transactionId']);
+
+        $response = $this->SOAPClient->__soapCall('SendBillingInfo', [$params]);
+
+        return $response->SendBillingInfoResult;
+    }
+
+    /**
+     * Set parameters for transaction inquiry and cancellation.
+     *
      * @param array $credentials
      * @return array
      */
