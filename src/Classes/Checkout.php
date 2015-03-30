@@ -24,6 +24,7 @@ class Checkout
      *
      * @param array $params
      * @return string
+     * @TODO Clean up logging
      */
     public function getURL(array $params)
     {
