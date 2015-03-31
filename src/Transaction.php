@@ -3,6 +3,8 @@
 namespace Coreproc\Dragonpay;
 
 use Coreproc\Dragonpay\MerchantService\MerchantServiceFactory;
+use Valitron\Validator;
+use Coreproc\Dragonpay\Exceptions\ValidationException;
 
 class Transaction
 {
@@ -94,6 +96,8 @@ class Transaction
      */
     public function sendBillingInformation(array $params)
     {
+        $this->validateBillingParams($params);
+
         $merchantId = $this->client->getMerchantId();
 
         $code = $this->merchantService->sendBillingInformation($merchantId, $params);
@@ -225,6 +229,34 @@ class Transaction
     {
         $this->credentials['merchantId'] = $this->client->getMerchantId();
         $this->credentials['merchantPassword'] = $this->client->getMerchantPassword();
+    }
+
+    private function validateBillingParams($params)
+    {
+        $validator = new Validator($params);
+
+        $validator->rule('required', [
+            'transactionId',
+            'firstName',
+            'lastName',
+            'address1',
+            'address2',
+            'city',
+            'state',
+            'country',
+            'telNo',
+            'email',
+        ]);
+
+        if ( ! $validator->validate()) {
+            $errors = '';
+
+            foreach ($validator->errors() as $key => $value) {
+                $errors .= $key . ' is required. ';
+            }
+
+            throw new ValidationException($errors);
+        }
     }
 
 }
