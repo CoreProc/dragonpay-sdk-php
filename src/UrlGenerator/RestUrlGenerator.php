@@ -2,6 +2,9 @@
 
 namespace Coreproc\Dragonpay\UrlGenerator;
 
+use Valitron\Validator;
+use Coreproc\Dragonpay\Exceptions\ValidationException;
+
 class RestUrlGenerator implements UrlGeneratorInterface
 {
 
@@ -21,6 +24,8 @@ class RestUrlGenerator implements UrlGeneratorInterface
      */
     public function generate(array $params)
     {
+        $this->validate($params);
+
         $queryString = sprintf(
             'merchantid=%s&txnid=%s&amount=%s&ccy=%s&description=%s&email=%s',
             urlencode($params['merchantId']),
@@ -73,6 +78,35 @@ class RestUrlGenerator implements UrlGeneratorInterface
         );
 
         return sha1($string);
+    }
+
+    /**
+     * @param array $params
+     * @throws ValidationException
+     */
+    private function validate(array $params)
+    {
+        $validator = new Validator($params);
+
+        $validator->rule('required', [
+            'merchantId',
+            'transactionId',
+            'amount',
+            'currency',
+            'description',
+            'email',
+            'password'
+        ]);
+
+        if ( ! $validator->validate()) {
+            $errors = '';
+
+            foreach ($validator->errors() as $key => $value) {
+                $errors .= $key . ' is required. ';
+            }
+
+            throw new ValidationException($errors);
+        }
     }
 
 }
