@@ -81,6 +81,8 @@ class RestUrlGenerator implements UrlGeneratorInterface
     }
 
     /**
+     * Validate required parameters for URL Generation.
+     *
      * @param array $params
      * @throws ValidationException
      */
