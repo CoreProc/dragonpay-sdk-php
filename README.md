@@ -47,7 +47,7 @@ Once you've downloaded the composer.phar file, continue with your installation b
 
 ### Checkout
 
-    use Coreproc\Dragonpay\Classes\Checkout;
+    use Coreproc\Dragonpay\Checkout;
 
     // Pass in the client instance and preferred web service (REST/SOAP); REST by default.
     $webService = 'SOAP';
