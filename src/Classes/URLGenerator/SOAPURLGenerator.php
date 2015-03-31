@@ -26,14 +26,14 @@ class SoapUrlGenerator implements UrlGeneratorInterface
     /**
      * Generate the URL to Dragonpay Payment Switch.
      *
-     * @param $params
+     * @param array $params
      * @return string
      */
-    public function generate($params)
+    public function generate(array $params)
     {
         $soapClient = new SoapClient($this->webServiceURL);
 
-        $params = $this->setParamKeys($params);
+        $params = $this->setParams($params);
 
         $response = $soapClient->__soapCall('GetTxnToken', [$params]);
 
@@ -45,12 +45,12 @@ class SoapUrlGenerator implements UrlGeneratorInterface
     }
 
     /**
-     * Set the parameter keys required by the Dragonpay Payment Switch.
+     * Set the parameters required by the Dragonpay Payment Switch.
      *
      * @param array $params
      * @return array
      */
-    private function setParamKeys(array $params)
+    private function setParams(array $params)
     {
         $params['merchantTxnId'] = $params['transactionId'];
         $params['ccy'] = $params['currency'];

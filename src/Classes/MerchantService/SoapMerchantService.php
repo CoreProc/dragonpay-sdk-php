@@ -24,7 +24,7 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      * Inquire for a transaction's status.
      *
      * @param array $credentials
-     * @param $transactionId
+     * @param string $transactionId
      * @return mixed
      */
     public function inquire(array $credentials, $transactionId)
@@ -40,7 +40,7 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      * Cancel a transaction.
      *
      * @param array $credentials
-     * @param $transactionId
+     * @param string $transactionId
      * @return mixed
      */
     public function cancel(array $credentials, $transactionId)
@@ -56,7 +56,7 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      * Send billing information of customer's billing address to the Dragonpay
      * Payment Switch API for additional fraud checking.
      *
-     * @param $merchantId
+     * @param string $merchantId
      * @param array $params
      * @return mixed
      */
@@ -73,7 +73,7 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
     }
 
     /**
-     * Set parameters for transaction inquiry and cancellation.
+     * Set the parameters for transaction inquiry and cancellation.
      *
      * @param array $credentials
      * @return array

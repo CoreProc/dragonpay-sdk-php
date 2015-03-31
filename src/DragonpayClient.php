@@ -7,14 +7,31 @@ use Katzgrau\KLogger\Logger;
 class DragonpayClient
 {
 
+    /**
+     * @var string Merchant's ID
+     */
     private $merchantId;
 
+    /**
+     * @var string Merchant's Password
+     */
     private $merchantPassword;
 
+    /**
+     * @var bool Enable or disable logging
+     */
     private $logging = false;
 
+    /**
+     * @var null|Logger
+     */
     private $logger;
 
+    /**
+     * @param array $credentials
+     * @param bool $logging
+     * @param null|string $logDirectory
+     */
     public function __construct(array $credentials, $logging = false, $logDirectory = null)
     {
         $this->merchantId = $credentials['merchantId'];
@@ -23,7 +40,7 @@ class DragonpayClient
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getMerchantId()
     {
@@ -31,7 +48,7 @@ class DragonpayClient
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getMerchantPassword()
     {
@@ -39,8 +56,10 @@ class DragonpayClient
     }
 
     /**
-     * @param $logging
-     * @param $logDirectory
+     * Set the logger if logging is set to true.
+     *
+     * @param bool $logging
+     * @param string $logDirectory
      */
     private function setLogger($logging, $logDirectory)
     {
@@ -53,6 +72,8 @@ class DragonpayClient
     }
 
     /**
+     * Check if logging is enabled.
+     *
      * @return bool
      * @TODO Make a logger class?
      */
@@ -62,7 +83,7 @@ class DragonpayClient
     }
 
     /**
-     * @return mixed
+     * @return Logger|null
      */
     public function getLogger()
     {

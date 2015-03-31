@@ -27,7 +27,7 @@ class RestMerchantService implements MerchantServiceInterface
      * Inquire for a transaction's status.
      *
      * @param array $credentials
-     * @param $transactionId
+     * @param string $transactionId
      * @return \GuzzleHttp\Stream\StreamInterface|null
      */
     public function inquire(array $credentials, $transactionId)
@@ -43,7 +43,7 @@ class RestMerchantService implements MerchantServiceInterface
      * Cancel a transaction.
      *
      * @param array $credentials
-     * @param $transactionId
+     * @param string $transactionId
      * @return string
      */
     public function cancel(array $credentials, $transactionId)
@@ -56,8 +56,10 @@ class RestMerchantService implements MerchantServiceInterface
     }
 
     /**
+     * Set the parameters required by the Dragonpay Payment Switch.
+     *
      * @param array $credentials
-     * @param $transactionId
+     * @param string $transactionId
      * @return array
      */
     private function setParams(array $credentials, $transactionId)

@@ -23,11 +23,11 @@ class Checkout
      * Get the generated URL to the Dragonpay Payment Switch API.
      *
      * @param array $params
-     * @param null $filter
+     * @param null|string $filter
      * @return string
      * @TODO Clean up logging
      */
-    public function getURL(array $params, $filter = null)
+    public function getUrl(array $params, $filter = null)
     {
         $params['merchantId'] = $this->client->getMerchantId();
         $params['password'] = $this->client->getMerchantPassword();
@@ -52,16 +52,26 @@ class Checkout
     }
 
     /**
+     * Generate the URL to Dragonpay Payment Switch API then redirect.
+     *
      * @param array $params
-     * @param $filter
+     * @param null|string $filter
      */
     public function redirect(array $params, $filter = null)
     {
-        $url = $this->getURL($params, $filter);
+        $url = $this->getUrl($params, $filter);
 
         header("Location:{$url}");
     }
 
+    /**
+     * Filter the payment channels that appears on Dragonpay's payment
+     * selection page.
+     *
+     * @param string $url
+     * @param string $filter
+     * @return string
+     */
     private function addFilter($url, $filter)
     {
         switch ($filter) {
@@ -91,6 +101,9 @@ class Checkout
                 break;
             case 'paypal_direct':
                 $filter = '&procid=PYPL';
+                break;
+            default:
+                $filter = '';
                 break;
         }
 

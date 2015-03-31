@@ -18,8 +18,15 @@ class Transaction
      */
     private $merchantService;
 
+    /**
+     * @var array Merchant credentials
+     */
     private $credentials;
 
+    /**
+     * @param DragonpayClient $client
+     * @param string $webService
+     */
     public function __construct(DragonpayClient $client, $webService = 'REST')
     {
         $this->client = $client;
@@ -30,7 +37,7 @@ class Transaction
     /**
      * Inquire for a transaction's status.
      *
-     * @param $transactionId
+     * @param string $transactionId
      * @return string
      * @TODO Clean up logging
      */
@@ -56,7 +63,7 @@ class Transaction
     /**
      * Cancel a transaction.
      *
-     * @param $transactionId
+     * @param string $transactionId
      * @return string
      * @TODO Clean up logging
      */
@@ -80,8 +87,11 @@ class Transaction
     }
 
     /**
+     * Send billing information of customer's billing address to the Dragonpay
+     * Payment Switch API for additional fraud checking.
+     *
      * @param array $params
-     * @return mixed
+     * @return string
      */
     public function sendBillingInformation(array $params)
     {
@@ -94,6 +104,12 @@ class Transaction
         return $status;
     }
 
+    /**
+     * Checks if a transaction is successful.
+     *
+     * @param array $params
+     * @return bool
+     */
     public function isSuccessful(array $params)
     {
         $responseDigest = $this->generateResponseDigest($params);
@@ -107,6 +123,13 @@ class Transaction
         return false;
     }
 
+    /**
+     * Generates a digest to be compared to the Dragonpay Payment Switch
+     * response digest parameter.
+     *
+     * @param $params
+     * @return string
+     */
     private function generateResponseDigest($params)
     {
         $string = sprintf(
@@ -119,7 +142,6 @@ class Transaction
         );
 
         return sha1($string);
-
     }
 
     /**

@@ -10,7 +10,7 @@ interface MerchantServiceInterface
      *
      * @param array $credentials
      * @param $transactionId
-     * @return mixed
+     * @return string
      */
     public function inquire(array $credentials, $transactionId);
 
@@ -19,7 +19,7 @@ interface MerchantServiceInterface
      *
      * @param array $credentials
      * @param $transactionId
-     * @return mixed
+     * @return string
      */
     public function cancel(array $credentials, $transactionId);
 

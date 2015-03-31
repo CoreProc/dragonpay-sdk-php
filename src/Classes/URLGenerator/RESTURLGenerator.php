@@ -13,7 +13,13 @@ class RestUrlGenerator implements UrlGeneratorInterface
      */
     private $basePaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
 
-    public function generate($params)
+    /**
+     * Generate the URL to Dragonpay Payment Switch.
+     *
+     * @param array $params
+     * @return string
+     */
+    public function generate(array $params)
     {
         $queryString = sprintf(
             'merchantid=%s&txnid=%s&amount=%s&ccy=%s&description=%s&email=%s',
