@@ -98,7 +98,17 @@ class Transaction
 
         $code = $this->merchantService->sendBillingInformation($merchantId, $params);
 
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][billing-info-sending] Sending billing information of Transaction ID {$params['transactionId']}";
+            $this->client->getLogger()->info($logMessage);
+        }
+
         $status = $this->parseStatusCode($code);
+
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][billing-info-sending] Sending of billing information of Transaction ID {$params['transactionId']} returned with a status of \"{$status}\"";
+            $this->client->getLogger()->info($logMessage);
+        }
 
         return $status;
     }
@@ -111,9 +121,19 @@ class Transaction
      */
     public function isSuccessful(array $params)
     {
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][transaction-checking] Checking if Transaction ID {$params['transactionId']} is successful.";
+            $this->client->getLogger()->info($logMessage);
+        }
+
         $responseDigest = $this->generateResponseDigest($params);
 
         $status = $this->parseTransactionStatusCode($params['status']);
+
+        if ($this->client->isLoggingEnabled()) {
+            $logMessage = "[dragonpay-sdk][transaction-checking] Transaction ID {$params['transactionId']} returned a status of \"{$status}\"";
+            $this->client->getLogger()->info($logMessage);
+        }
 
         if ($responseDigest == $params['digest'] && $status == 'Success') {
             return true;
