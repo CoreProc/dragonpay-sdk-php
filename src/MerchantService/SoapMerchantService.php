@@ -1,6 +1,6 @@
 <?php
 
-namespace Coreproc\Dragonpay\Classes\MerchantService;
+namespace Coreproc\Dragonpay\MerchantService;
 
 use SoapClient;
 

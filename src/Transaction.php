@@ -1,9 +1,8 @@
 <?php
 
-namespace Coreproc\Dragonpay\Classes;
+namespace Coreproc\Dragonpay;
 
-use Coreproc\Dragonpay\DragonpayClient;
-use Coreproc\Dragonpay\Classes\MerchantService\MerchantServiceFactory;
+use Coreproc\Dragonpay\MerchantService\MerchantServiceFactory;
 
 class Transaction
 {

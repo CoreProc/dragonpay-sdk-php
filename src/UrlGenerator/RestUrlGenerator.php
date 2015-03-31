@@ -1,6 +1,6 @@
 <?php
 
-namespace Coreproc\Dragonpay\Classes\UrlGenerator;
+namespace Coreproc\Dragonpay\UrlGenerator;
 
 class RestUrlGenerator implements UrlGeneratorInterface
 {
