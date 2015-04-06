@@ -3,7 +3,9 @@
 namespace Coreproc\Dragonpay;
 
 use Coreproc\Dragonpay\MerchantService\MerchantServiceFactory;
+use Coreproc\Dragonpay\MerchantService\SoapMerchantService;
 use Valitron\Validator;
+use Exception;
 use Coreproc\Dragonpay\Exceptions\ValidationException;
 
 class Transaction
@@ -91,11 +93,19 @@ class Transaction
      * Send billing information of customer's billing address to the Dragonpay
      * Payment Switch API for additional fraud checking.
      *
+     * SOAP web service is required for this function.
+     *
      * @param array $params
      * @return string
+     * @throws Exception
+     * @throws ValidationException
      */
     public function sendBillingInformation(array $params)
     {
+        if ( ! $this->merchantService instanceof SoapMerchantService) {
+            throw new Exception('You must use the SOAP web service in order to use this function.');
+        }
+
         $this->validateBillingParams($params);
 
         $merchantId = $this->client->getMerchantId();
