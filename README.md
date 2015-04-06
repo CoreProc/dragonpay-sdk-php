@@ -71,7 +71,7 @@ REST service specific required parameters:
     
     $params = [
         'transactionId' => 'transaction-id',
-        'amount'        => 20000.00,
+        'amount'        => '20000.00',
         'currency'      => 'PHP',
         'description'   => 'Playstation 4',
         'email'         => 'john@example.com',
@@ -81,7 +81,7 @@ SOAP service specific required parameters:
 
     $params = [
         'transactionId' => 'transaction-id',
-        'amount'        => 20000.99,
+        'amount'        => '20000.99',
         'currency'      => 'PHP',
         'description'   => 'Playstation 4',
     ];
