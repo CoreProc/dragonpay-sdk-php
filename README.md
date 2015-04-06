@@ -79,7 +79,7 @@ REST service specific required parameters:
 
 SOAP service specific required parameters:
 
-    $params [
+    $params = [
         'transactionId' => 'transaction-id',
         'amount'        => 20000.99,
         'currency'      => 'PHP',
