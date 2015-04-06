@@ -2,6 +2,7 @@
 
 namespace Coreproc\Dragonpay;
 
+use Exception;
 use Katzgrau\KLogger\Logger;
 
 class DragonpayClient
@@ -60,11 +61,12 @@ class DragonpayClient
      *
      * @param bool $logging
      * @param string $logDirectory
+     * @throws Exception
      */
     private function setLogger($logging, $logDirectory)
     {
         if ($logging == true && ! is_dir($logDirectory)) {
-            die('Please set a valid directory in order to enable logging.');
+            throw new Exception('Please set a valid directory in order to enable logging.');
         }
 
         $this->logging = true;
