@@ -140,7 +140,7 @@ Required request data from Dragonpay Payment Switch:
     $params = [
         'transactionId'   => $_GET['txnid'],
         'referenceNumber' => $_GET['refNo'],
-        'status'          => $_GET['status']
+        'status'          => $_GET['status'],
         'message'         => $_GET['message'],
         'digest'          => $_GET['digest']
     ];
