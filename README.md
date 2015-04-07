@@ -29,10 +29,12 @@ Once you've downloaded the composer.phar file, continue with your installation b
 
 ### Setting up the Dragonpay Client
 
+Require the autoloader and import the `DragonpayClient`:
+
     require '../vendor/autoload.php';
 
     use Coreproc\Dragonpay\DragonpayClient;
-
+    
 Set the merchant credentials:
 
     $credentials = [
@@ -54,6 +56,8 @@ Instantiate the client:
     $client = new DragonpayClient($credentials, $logging, $logDirectory);
 
 ### Checkout
+
+Import the `Checkout` class:
 
     use Coreproc\Dragonpay\Checkout;
 
@@ -88,11 +92,19 @@ SOAP service specific required parameters:
 
 For getting the URL to Payment Switch:
 
-Returns a URL for redirecting to the Payment Switch manually.
+The `getUrl` method returns a URL for redirecting to the Payment Switch manually.
     
     $url = $checkout->getUrl($params);
+    
+Now `$url` is equal to:
 
-For redirecting to the generated URL:
+    // REST URL
+    http://gw.dragonpay.ph/Pay.aspx?merchantid=merchant-id&txnid=transaction-id&amount=20000.00&ccy=PHP&description=Playstation+4&email=john%40example.com&digest=5ed24e0697800b569707542cff867eb2e9c681aa
+    
+    // SOAP URL
+    http://gw.dragonpay.ph/Pay.aspx?tokenid=8ca5a73275d5f54cz06219a09f935c26
+
+Use the `redirect` method for redirecting to the generated URL:
 
     $checkout->redirect($params);
     
@@ -129,6 +141,8 @@ Pass on the filter like so:
     
 ### Handling the Response
 
+Import the `Transaction` class:
+
     use Coreproc\Dragonpay\Transaction;
 
 Pass in the client instance:
@@ -147,9 +161,9 @@ Required request data from Dragonpay Payment Switch:
     
 Checking if the transaction is successful:
 
-Returns a boolean (true or false)
+The `isSuccessful` method returns a boolean (true or false)
 
-    $transaction->isSuccessful($params);
+    $status = $transaction->isSuccessful($params); // returns true/false
     
 ### Support functions
 
@@ -159,6 +173,8 @@ integrate and automate their systems. These functions are available using the RE
 ### Transaction Inquiry
 
 The merchant can inquire the status of a transaction by using this function.
+
+Import the `Transaction` class:
 
     use Coreproc\Dragonpay\Transaction;
     
@@ -170,35 +186,37 @@ Using the SOAP web service:
 
     $transaction = new Transaction($client, 'SOAP');
     
-Returns the status of the transaction (string)
+The `inquire` method returns the status of the transaction (string)
 
     $transactionId = 'transaction-id';
     
-    $status = $transaction->inquire($transactionId);
+    $status = $transaction->inquire($transactionId); // returns Success, Failure, Pending, Unknown, Refund, Chargeback, Void, Authorized or Error
     
 ### Cancellation of Transaction
 
-The merchant can cancel a pending transaction by using this function.
+The merchant can cancel a **pending** transaction by using this function.
 
-Returns the status of the transaction cancellation (string)
+The `cancel` method returns the status of the transaction cancellation (string)
  
     use Coreproc\Dragonpay\Transaction;
     
-    $transaction = new Transaction($client);
+    $transaction = new Transaction($client); // OR $transaction = new Transaction($client, 'SOAP');
     
     $transactionId = 'transaction-id';
     
-    $status = $transaction->cancel($transactionId);
+    $status = $transaction->cancel($transactionId); // returns Success or Failed
     
 ### Sending of Billing Information
 
 For additional fraud checking, the merchant can send the customer’s billing address by using this function.
 
-SOAP is required for this function.
+The SOAP web service is required for this function.
 
+    use Coreproc\Dragonpay\Transaction;
+    
     $transaction = new Transaction($client, 'SOAP');
 
-Required parameters to be sent:
+Required parameters to be sent to Payment Switch:
 
     $params = [
         'transactionId' => '12345',
@@ -214,6 +232,6 @@ Required parameters to be sent:
         'email'         => 'john@example.com'
     ];
     
-Returns the status of sending of billing information. (string)
+The `sendBillingInformation` method returns the status of sending of billing information. (string)
 
-    $status = $transaction->sendBillingInformation($params);
+    $status = $transaction->sendBillingInformation($params); // returns Success or Failed
