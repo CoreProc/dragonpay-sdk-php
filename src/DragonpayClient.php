@@ -2,20 +2,17 @@
 
 namespace Coreproc\Dragonpay;
 
+use Coreproc\Dragonpay\Exceptions\ValidationException;
+use Exception;
 use Katzgrau\KLogger\Logger;
 
 class DragonpayClient
 {
 
     /**
-     * @var int Merchant ID
+     * @var string Merchant ID
      */
     private $merchantId;
-
-    /**
-     * @var string Merchant Secret Key
-     */
-    private $secretKey;
 
     /**
      * @var string Merchant Password
@@ -28,57 +25,77 @@ class DragonpayClient
     private $logging = false;
 
     /**
-     * @var Logger
+     * @var null|Logger
      */
     private $logger;
 
     /**
-     * @param $merchantId
-     * @param $secretKey
-     * @param $merchantPassword
+     * @param array $credentials Merchant Credentials
      * @param bool $logging
      * @param null|string $logDirectory
+     * @throws ValidationException
      */
-    public function __construct($merchantId, $secretKey, $merchantPassword, $logging = false, $logDirectory = null)
+    public function __construct(array $credentials, $logging = false, $logDirectory = null)
     {
-        $this->merchantId = $merchantId;
-        $this->secretKey = $secretKey;
-        $this->merchantPassword = $merchantPassword;
+        if (empty($credentials['merchantId']) || empty($credentials['merchantPassword'])) {
+            throw new ValidationException('Please set the Merchant ID or password.');
+        };
 
-        if ($logging == true) {
-            if ($logDirectory !== null && is_dir($logDirectory)) {
-                $this->logging = true;
-                $this->logger = new Logger($logDirectory);
-            } else {
-                $message = 'Please make sure that you set a valid log directory to enable logging.';
-                die($message);
-            }
-        }
+        $this->merchantId = $credentials['merchantId'];
+        $this->merchantPassword = $credentials['merchantPassword'];
+        $this->setLogger($logging, $logDirectory);
     }
 
+    /**
+     * @return string
+     */
     public function getMerchantId()
     {
         return $this->merchantId;
     }
 
-    public function getSecretKey()
-    {
-        return $this->secretKey;
-    }
-
+    /**
+     * @return string
+     */
     public function getMerchantPassword()
     {
         return $this->merchantPassword;
     }
 
+    /**
+     * Check if logging is enabled.
+     *
+     * @return bool
+     * @TODO Make a logger class?
+     */
+    public function isLoggingEnabled()
+    {
+        return $this->logging;
+    }
+
+    /**
+     * @return Logger|null
+     */
     public function getLogger()
     {
         return $this->logger;
     }
 
-    public function isLoggingEnabled()
+    /**
+     * Set the logger if logging is set to true.
+     *
+     * @param bool $logging
+     * @param string $logDirectory
+     * @throws Exception
+     */
+    private function setLogger($logging, $logDirectory)
     {
-        return $this->logging;
+        if ($logging == true && ! is_dir($logDirectory)) {
+            throw new Exception('Please set a valid directory in order to enable logging.');
+        }
+
+        $this->logging = true;
+        $this->logger = new Logger($logDirectory);
     }
 
 }
