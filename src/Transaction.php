@@ -166,7 +166,7 @@ class Transaction
     private function generateResponseDigest($params)
     {
         $string = sprintf(
-            '%s:%s:%s,%s,%s',
+            '%s:%s:%s:%s:%s',
             $params['transactionId'],
             $params['referenceNumber'],
             $params['status'],
