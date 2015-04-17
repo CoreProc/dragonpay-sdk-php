@@ -42,7 +42,7 @@ Set the merchant credentials:
         'merchantPassword'  => 'merchant-password',
     ];
     
-Logging is optional. It's set to false by default and can be left off when instantiating the client like so:
+Logging is optional. It's set to false by default and can omitted when instantiating the client like so:
 
     $client = new DragonpayClient($credentials);
     
@@ -61,11 +61,11 @@ Import the `Checkout` class:
 
     use Coreproc\Dragonpay\Checkout;
 
-REST is the default web service used by the client and can be left off when instantiating the class like so:
+Instantiate the `Checkout` class like so:
  
     $checkout = new Checkout($client);
     
-Using the SOAP Web Service:
+REST is the default web service used by the `Checkout` class. For using the SOAP web service, you can set the second parameter to `SOAP`:
 
     $checkout = new Checkout($client, 'SOAP');
 
@@ -98,10 +98,12 @@ The `getUrl` method returns a URL for redirecting to the Payment Switch manually
     
 Now `$url` is equal to:
 
-    // REST URL
+Using the REST web service:
+
     http://gw.dragonpay.ph/Pay.aspx?merchantid=merchant-id&txnid=transaction-id&amount=20000.00&ccy=PHP&description=Playstation+4&email=john%40example.com&digest=5ed24e0697800b569707542cff867eb2e9c681aa
     
-    // SOAP URL
+Using the SOAP web service:
+
     http://gw.dragonpay.ph/Pay.aspx?tokenid=8ca5a73275d5f54cz06219a09f935c26
 
 Use the `redirect` method for redirecting to the generated URL:
@@ -178,11 +180,11 @@ Import the `Transaction` class:
 
     use Coreproc\Dragonpay\Transaction;
     
-The `Transaction` class uses the REST web service as a default, allowing for leaving off of the web service parameter like so:
+Instantiate the `Transaction` class like so:
 
     $transaction = new Transaction($client);
     
-Using the SOAP web service:
+REST is the default web service used by the `Transaction` class. For using the SOAP web service, you can set the second parameter to `SOAP`:
 
     $transaction = new Transaction($client, 'SOAP');
     
@@ -226,8 +228,8 @@ Required parameters to be sent to Payment Switch:
         'address2'      => 'Address 2',
         'city'          => 'Quezon City',
         'state'         => 'State',
-        'country'       => 'Philippines',
-        'zipCode'       => '1116',
+        'country'       => 'PH', // 2-char ISO country code (ex. PH, US, CA)
+        'zipCode'       => '1116', // OPTIONAL
         'telNo'         => '(02)9123456',
         'email'         => 'john@example.com'
     ];
