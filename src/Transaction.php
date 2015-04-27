@@ -2,6 +2,7 @@
 
 namespace Coreproc\Dragonpay;
 
+use Coreproc\Dragonpay\Logging\Loggable;
 use Coreproc\Dragonpay\MerchantService\MerchantServiceFactory;
 use Coreproc\Dragonpay\MerchantService\SoapMerchantService;
 use Valitron\Validator;
@@ -10,6 +11,8 @@ use Coreproc\Dragonpay\Exceptions\ValidationException;
 
 class Transaction
 {
+
+    use Loggable;
 
     /**
      * @var DragonpayClient
@@ -46,19 +49,17 @@ class Transaction
      */
     public function inquire($transactionId)
     {
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][transaction-inquiry] Inquiring status of Transaction ID {$transactionId}";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log transaction inquiry
+        $logMessage = "[dragonpay-sdk][transaction-inquiry] Inquiring status of Transaction ID {$transactionId}";
+        $this->log($logMessage);
 
         $code = $this->merchantService->inquire($this->credentials, $transactionId);
 
         $status = $this->parseTransactionStatusCode($code);
 
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][transaction-inquiry] Status inquiry of Transaction ID {$transactionId} returned the status of \"{$status}\".";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log transaction inquiry status
+        $logMessage = "[dragonpay-sdk][transaction-inquiry] Status inquiry of Transaction ID {$transactionId} returned the status of \"{$status}\".";
+        $this->log($logMessage);
 
         return $status;
     }
@@ -72,19 +73,17 @@ class Transaction
      */
     public function cancel($transactionId)
     {
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][transaction-cancellation] Transaction ID {$transactionId} is being cancelled.";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log cancellation of transaction
+        $logMessage = "[dragonpay-sdk][transaction-cancellation] Transaction ID {$transactionId} is being cancelled.";
+        $this->log($logMessage);
 
         $code = $this->merchantService->cancel($this->credentials, $transactionId);
 
         $status = $this->parseStatusCode($code);
 
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][transaction-cancellation] Cancellation of Transaction ID {$transactionId} returned the status of \"{$status}\".";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log status of transaction cancellation
+        $logMessage = "[dragonpay-sdk][transaction-cancellation] Cancellation of Transaction ID {$transactionId} returned the status of \"{$status}\".";
+        $this->log($logMessage);
 
         return $status;
     }
@@ -112,17 +111,15 @@ class Transaction
 
         $code = $this->merchantService->sendBillingInformation($merchantId, $params);
 
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][billing-info-sending] Sending billing information of Transaction ID {$params['transactionId']}";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log sending of billing information
+        $logMessage = "[dragonpay-sdk][billing-info-sending] Sending billing information of Transaction ID {$params['transactionId']}";
+        $this->log($logMessage);
 
         $status = $this->parseStatusCode($code);
 
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][billing-info-sending] Sending of billing information of Transaction ID {$params['transactionId']} returned with a status of \"{$status}\"";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log status of sending of billing information
+        $logMessage = "[dragonpay-sdk][billing-info-sending] Sending of billing information of Transaction ID {$params['transactionId']} returned with a status of \"{$status}\"";
+        $this->log($logMessage);
 
         return $status;
     }
@@ -135,19 +132,17 @@ class Transaction
      */
     public function isSuccessful(array $params)
     {
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][transaction-checking] Checking if Transaction ID {$params['transactionId']} is successful.";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log checking of transaction status
+        $logMessage = "[dragonpay-sdk][transaction-checking] Checking if Transaction ID {$params['transactionId']} is successful.";
+        $this->log($logMessage);
 
         $responseDigest = $this->generateResponseDigest($params);
 
         $status = $this->parseTransactionStatusCode($params['status']);
 
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][transaction-checking] Transaction ID {$params['transactionId']} returned a status of \"{$status}\"";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log status of transaction
+        $logMessage = "[dragonpay-sdk][transaction-checking] Transaction ID {$params['transactionId']} returned a status of \"{$status}\"";
+        $this->log($logMessage);
 
         if ($responseDigest == $params['digest'] && $status == 'Success') {
             return true;

@@ -2,10 +2,13 @@
 
 namespace Coreproc\Dragonpay;
 
+use Coreproc\Dragonpay\Logging\Loggable;
 use Coreproc\Dragonpay\UrlGenerator\UrlGeneratorFactory;
 
 class Checkout
 {
+
+    use Loggable;
 
     /**
      * @var DragonpayClient
@@ -31,17 +34,15 @@ class Checkout
         $params['merchantId'] = $this->client->getMerchantId();
         $params['password'] = $this->client->getMerchantPassword();
 
-        if ($this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][url-generation] Generating URL to Dragonpay Payment Switch.";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log generation of URL
+        $logMessage = "[dragonpay-sdk][url-generation] Generating URL to Dragonpay Payment Switch.";
+        $this->log($logMessage);
 
         $url = $this->urlGenerator->generate($params);
 
-        if ($url && $this->client->isLoggingEnabled()) {
-            $logMessage = "[dragonpay-sdk][url-generation] Successfully generated URL to Dragonpay Payment Switch. URL: \"{$url}\"";
-            $this->client->getLogger()->info($logMessage);
-        }
+        // Log successful generation of URL
+        $logMessage = "[dragonpay-sdk][url-generation] Successfully generated URL to Dragonpay Payment Switch. URL: \"{$url}\"";
+        $this->log($logMessage);
 
         if ($filter !== null) {
             $url = $this->addFilter($url, $filter);
