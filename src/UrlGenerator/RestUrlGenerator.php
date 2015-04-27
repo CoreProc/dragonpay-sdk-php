@@ -2,19 +2,20 @@
 
 namespace Coreproc\Dragonpay\UrlGenerator;
 
-use Valitron\Validator;
-use Coreproc\Dragonpay\Exceptions\ValidationException;
-
-class RestUrlGenerator implements UrlGeneratorInterface
+class RestUrlGenerator extends UrlGenerator implements UrlGeneratorInterface
 {
 
     /**
-     * Dragonpay Payment Switch Base URL
-     *
-     * @var string
-     * @TODO Put this in a config file
+     * @var array Validation rules
      */
-    private $basePaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
+    protected $rules = [
+        'merchantId',
+        'password',
+        'transactionId',
+        'amount',
+        'currency',
+        'description',
+    ];
 
     /**
      * Generate the URL to Dragonpay Payment Switch.
@@ -78,37 +79,6 @@ class RestUrlGenerator implements UrlGeneratorInterface
         );
 
         return sha1($string);
-    }
-
-    /**
-     * Validate required parameters for URL Generation.
-     *
-     * @param array $params
-     * @throws ValidationException
-     */
-    private function validate(array $params)
-    {
-        $validator = new Validator($params);
-
-        $validator->rule('required', [
-            'merchantId',
-            'transactionId',
-            'amount',
-            'currency',
-            'description',
-            'email',
-            'password'
-        ]);
-
-        if ( ! $validator->validate()) {
-            $errors = '';
-
-            foreach ($validator->errors() as $key => $value) {
-                $errors .= $key . ' is required. ';
-            }
-
-            throw new ValidationException($errors);
-        }
     }
 
 }
