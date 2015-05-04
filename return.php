@@ -23,8 +23,7 @@ $result = $transaction->isSuccessful($params);
 
 if ($result == true) {
     // Perform necessary db updates/whatever back-end process required
+	var_dump($result);
 } else {
-
+	var_dump($transaction->inquire($params['transactionId']));
 }
-
-var_dump($result);
