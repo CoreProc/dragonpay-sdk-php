@@ -196,7 +196,17 @@ The `inquire` method returns the status of the transaction (string)
 
     $transactionId = 'transaction-id';
     
-    $status = $transaction->inquire($transactionId); // returns Success, Failure, Pending, Unknown, Refund, Chargeback, Void, Authorized or Error
+    // Returns one of the following:
+    // Success
+    // Failure
+    // Pending
+    // Unknown
+    // Refund
+    // Chargeback
+    // Void
+    // Authorized 
+    // Error
+    $status = $transaction->inquire($transactionId); 
     
 ### Cancellation of Transaction
 
