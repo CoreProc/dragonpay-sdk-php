@@ -1,0 +1,334 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Dragonpay-sdk-php by CoreProc</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Dragonpay-sdk-php</h1>
+        <p>A PHP Library for consuming Dragonpay&#39;s Payment Switch API</p>
+        <p class="view"><a href="https://github.com/CoreProc/dragonpay-sdk-php">View the Project on GitHub <small>CoreProc/dragonpay-sdk-php</small></a></p>
+        <ul>
+          <li><a href="https://github.com/CoreProc/dragonpay-sdk-php/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/CoreProc/dragonpay-sdk-php/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/CoreProc/dragonpay-sdk-php">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="dragonpay-payment-switch-api---php-library" class="anchor" href="#dragonpay-payment-switch-api---php-library" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dragonpay Payment Switch API - PHP Library</h1>
+
+<p>A PHP Library for consuming Dragonpay's Payment Switch API.</p>
+
+<h2>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick start</h2>
+
+<h3>
+<a id="required-setup" class="anchor" href="#required-setup" aria-hidden="true"><span class="octicon octicon-link"></span></a>Required setup</h3>
+
+<p>The easiest way to install this library is via Composer.</p>
+
+<p>Create a <code>composer.json</code> file and enter the following:</p>
+
+<pre><code>{
+    "require": {
+        "coreproc/dragonpay-sdk": "dev-master"
+    }
+}
+</code></pre>
+
+<p>If you haven't yet downloaded your composer file, you can do so by executing the following in your command line:</p>
+
+<pre><code>curl -sS https://getcomposer.org/installer | php
+</code></pre>
+
+<p>Once you've downloaded the composer.phar file, continue with your installation by running the following:</p>
+
+<pre><code>php composer.phar install
+</code></pre>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<h3>
+<a id="setting-up-the-dragonpay-client" class="anchor" href="#setting-up-the-dragonpay-client" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting up the Dragonpay Client</h3>
+
+<p>Require the autoloader and import the <code>DragonpayClient</code>:</p>
+
+<pre><code>require '../vendor/autoload.php';
+
+use Coreproc\Dragonpay\DragonpayClient;
+</code></pre>
+
+<p>Set the merchant credentials:</p>
+
+<pre><code>$credentials = [
+    'merchantId'        =&gt; 'merchant-id',
+    'merchantPassword'  =&gt; 'merchant-password',
+];
+</code></pre>
+
+<p>Logging is optional. It's set to false by default and can omitted when instantiating the client like so:</p>
+
+<pre><code>$client = new DragonpayClient($credentials);
+</code></pre>
+
+<p>When set to true, a third parameter is required for the logging directory.</p>
+
+<pre><code>$logging = true;
+$logDirectory = 'logs';
+</code></pre>
+
+<p>Instantiate the client:</p>
+
+<pre><code>$client = new DragonpayClient($credentials, $logging, $logDirectory);
+</code></pre>
+
+<h3>
+<a id="checkout" class="anchor" href="#checkout" aria-hidden="true"><span class="octicon octicon-link"></span></a>Checkout</h3>
+
+<p>Import the <code>Checkout</code> class:</p>
+
+<pre><code>use Coreproc\Dragonpay\Checkout;
+</code></pre>
+
+<p>Instantiate the <code>Checkout</code> class like so:</p>
+
+<pre><code>$checkout = new Checkout($client);
+</code></pre>
+
+<p>REST is the default web service used by the <code>Checkout</code> class. For using the SOAP web service, you can set the second parameter to <code>SOAP</code>:</p>
+
+<pre><code>$checkout = new Checkout($client, 'SOAP');
+</code></pre>
+
+<p>Transaction parameters from the merchant site:</p>
+
+<p>REST service specific required parameters:</p>
+
+<pre><code>$params = [
+    'transactionId' =&gt; 'transaction-id',
+    'amount'        =&gt; '20000.00',
+    'currency'      =&gt; 'PHP',
+    'description'   =&gt; 'Playstation 4',
+    'email'         =&gt; 'john@example.com',
+];
+</code></pre>
+
+<p>SOAP service specific required parameters:</p>
+
+<pre><code>$params = [
+    'transactionId' =&gt; 'transaction-id',
+    'amount'        =&gt; '20000.99',
+    'currency'      =&gt; 'PHP',
+    'description'   =&gt; 'Playstation 4',
+];
+</code></pre>
+
+<p>For getting the URL to Payment Switch:</p>
+
+<p>The <code>getUrl</code> method returns a URL for redirecting to the Payment Switch manually.</p>
+
+<pre><code>$url = $checkout-&gt;getUrl($params);
+</code></pre>
+
+<p>Now <code>$url</code> is equal to:</p>
+
+<p>Using the REST web service:</p>
+
+<pre><code>http://gw.dragonpay.ph/Pay.aspx?merchantid=merchant-id&amp;txnid=transaction-id&amp;amount=20000.00&amp;ccy=PHP&amp;description=Playstation+4&amp;email=john%40example.com&amp;digest=5ed24e0697800b569707542cff867eb2e9c681aa
+</code></pre>
+
+<p>Using the SOAP web service:</p>
+
+<pre><code>http://gw.dragonpay.ph/Pay.aspx?tokenid=8ca5a73275d5f54cz06219a09f935c26
+</code></pre>
+
+<p>Use the <code>redirect</code> method for redirecting to the generated URL:</p>
+
+<pre><code>$checkout-&gt;redirect($params);
+</code></pre>
+
+<p>Filtering Payment Channels</p>
+
+<p>There may be instances wherein the merchant would want to filter the payment
+channels that they want to appear in Dragonpay’s payment selection page, or they
+may want to skip the Dragonpay page altogether and go straight to the payment
+details for a specific channel.</p>
+
+<p>The merchant can implement this by providing a second parameter to the <code>getUrl</code> and <code>redirect</code> methods of the class <code>Checkout</code> respectively.</p>
+
+<p>For a showing only a specific payment channel:</p>
+
+<pre><code>Online Banking: online_banking
+Over-the-Counter Banking and ATM: otc_banking_atm
+Over-the-Counter non-Bank: otc_non_bank
+PayPal: paypal
+Credit Cards: credit_card 
+Mobile (Gcash): mobile
+International OTC: international_otc
+</code></pre>
+
+<p>For redirecting directly to a payment channel:</p>
+
+<pre><code>Globe Gcash: gcash_direct
+Credit Cards: credit_card_direct
+PayPal: paypal_direct
+</code></pre>
+
+<p>Pass on the filter like so:</p>
+
+<pre><code>$filter = 'online_banking';
+
+$checkout = new Checkout($client);
+
+$checkout-&gt;getUrl($params, $filter);
+
+$checkout-&gt;redirect($params, $filter);
+</code></pre>
+
+<h3>
+<a id="handling-the-response" class="anchor" href="#handling-the-response" aria-hidden="true"><span class="octicon octicon-link"></span></a>Handling the Response</h3>
+
+<p>Import the <code>Transaction</code> class:</p>
+
+<pre><code>use Coreproc\Dragonpay\Transaction;
+</code></pre>
+
+<p>Pass in the client instance:</p>
+
+<pre><code>$transaction = new Transaction($client);
+</code></pre>
+
+<p>Required request data from Dragonpay Payment Switch:</p>
+
+<pre><code>$params = [
+    'transactionId'   =&gt; $_GET['txnid'],
+    'referenceNumber' =&gt; $_GET['refNo'],
+    'status'          =&gt; $_GET['status'],
+    'message'         =&gt; $_GET['message'],
+    'digest'          =&gt; $_GET['digest']
+];
+</code></pre>
+
+<p>Checking if the transaction is successful:</p>
+
+<p>The <code>isSuccessful</code> method returns a boolean (true or false)</p>
+
+<pre><code>$status = $transaction-&gt;isSuccessful($params); // returns true/false
+</code></pre>
+
+<h3>
+<a id="support-functions" class="anchor" href="#support-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Support functions</h3>
+
+<p>The Payment Switch provides some supplementary functions allowing merchants to more tightly
+integrate and automate their systems. These functions are available using the REST or SOAP web service.</p>
+
+<h3>
+<a id="transaction-inquiry" class="anchor" href="#transaction-inquiry" aria-hidden="true"><span class="octicon octicon-link"></span></a>Transaction Inquiry</h3>
+
+<p>The merchant can inquire the status of a transaction by using this function.</p>
+
+<p>Import the <code>Transaction</code> class:</p>
+
+<pre><code>use Coreproc\Dragonpay\Transaction;
+</code></pre>
+
+<p>Instantiate the <code>Transaction</code> class like so:</p>
+
+<pre><code>$transaction = new Transaction($client);
+</code></pre>
+
+<p>REST is the default web service used by the <code>Transaction</code> class. For using the SOAP web service, you can set the second parameter to <code>SOAP</code>:</p>
+
+<pre><code>$transaction = new Transaction($client, 'SOAP');
+</code></pre>
+
+<p>The <code>inquire</code> method returns the status of the transaction (string)</p>
+
+<pre><code>$transactionId = 'transaction-id';
+
+// Returns one of the following:
+// Success
+// Failure
+// Pending
+// Unknown
+// Refund
+// Chargeback
+// Void
+// Authorized 
+// Error
+$status = $transaction-&gt;inquire($transactionId); 
+</code></pre>
+
+<h3>
+<a id="cancellation-of-transaction" class="anchor" href="#cancellation-of-transaction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cancellation of Transaction</h3>
+
+<p>The merchant can cancel a <strong>pending</strong> transaction by using this function.</p>
+
+<p>The <code>cancel</code> method returns the status of the transaction cancellation (string)</p>
+
+<pre><code>use Coreproc\Dragonpay\Transaction;
+
+$transaction = new Transaction($client); // OR $transaction = new Transaction($client, 'SOAP');
+
+$transactionId = 'transaction-id';
+
+$status = $transaction-&gt;cancel($transactionId); // returns Success or Failed
+</code></pre>
+
+<h3>
+<a id="sending-of-billing-information" class="anchor" href="#sending-of-billing-information" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sending of Billing Information</h3>
+
+<p>For additional fraud checking, the merchant can send the customer’s billing address by using this function.</p>
+
+<p>The SOAP web service is required for this function.</p>
+
+<pre><code>use Coreproc\Dragonpay\Transaction;
+
+$transaction = new Transaction($client, 'SOAP');
+</code></pre>
+
+<p>Required parameters to be sent to Payment Switch:</p>
+
+<pre><code>$params = [
+    'transactionId' =&gt; '12345',
+    'firstName'     =&gt; 'John',
+    'lastName'      =&gt; 'Doe',
+    'address1'      =&gt; 'Address 1',
+    'address2'      =&gt; 'Address 2',
+    'city'          =&gt; 'Quezon City',
+    'state'         =&gt; 'State',
+    'country'       =&gt; 'PH', // 2-char ISO country code (ex. PH, US, CA)
+    'zipCode'       =&gt; '1116', // OPTIONAL
+    'telNo'         =&gt; '(02)9123456',
+    'email'         =&gt; 'john@example.com'
+];
+</code></pre>
+
+<p>The <code>sendBillingInformation</code> method returns the status of sending of billing information. (string)</p>
+
+<pre><code>$status = $transaction-&gt;sendBillingInformation($params); // returns Success or Failed
+</code></pre>
+      </section>
+    </div>
+    <footer>
+      <p>Project maintained by <a href="https://github.com/CoreProc">CoreProc</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
