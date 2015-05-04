@@ -139,7 +139,11 @@ Pass on the filter like so:
 
     $filter = 'online_banking';
     
-    $checkout = new Checkout($client, $filter);
+    $checkout = new Checkout($client);
+    
+    $checkout->getUrl($params, $filter);
+    
+    $checkout->redirect($params, $filter);
     
 ### Handling the Response
 
