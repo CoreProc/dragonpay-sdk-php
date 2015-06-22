@@ -9,10 +9,10 @@
       "Coreproc\\Dragonpay\\": "src"
     }
   },
-  "minimum_stability": "dev",
+  "minimum_stability": "stable",
   "require": {
     "guzzlehttp/guzzle": "~5.0",
-	"katzgrau/klogger": "1.0.*",
+	  "katzgrau/klogger": "1.0.*",
     "vlucas/valitron": "~1.2"
   }
 }
