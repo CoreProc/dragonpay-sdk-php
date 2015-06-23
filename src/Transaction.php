@@ -140,11 +140,12 @@ class Transaction
 
         $status = $this->parseTransactionStatusCode($params['status']);
 
-        // Log status of transaction
-        $logMessage = "[dragonpay-sdk][transaction-checking] Transaction ID {$params['transactionId']} returned a status of \"{$status}\"";
-        $this->log($logMessage);
 
         if ($responseDigest == $params['digest'] && $status == 'Success') {
+            // Log status of transaction
+            $logMessage = "[dragonpay-sdk][transaction-checking] Transaction ID {$params['transactionId']} returned a status of Success";
+            $this->log($logMessage);
+
             return true;
         }
 
