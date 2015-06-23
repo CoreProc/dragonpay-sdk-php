@@ -78,8 +78,11 @@ class Checkout
             case 'online_banking':
                 $filter = '&mode=1';
                 break;
-            case 'otc_non_bank':
+            case 'otc_banking_atm':
                 $filter = '&mode=2';
+                break;
+            case 'otc_non_bank':
+                $filter = '&mode=4';
                 break;
             case 'paypal':
                 $filter = '&mode=32';
