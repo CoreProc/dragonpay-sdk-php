@@ -23,21 +23,31 @@ class SoapUrlGenerator extends UrlGenerator implements UrlGeneratorInterface
      * Dragonpay Web Service URL
      *
      * @var string
-     * @TODO Put this in a config file
      */
-    private $webServiceURL = 'http://test.dragonpay.ph/DragonPayWebService/MerchantService.asmx?WSDL';
+    private $webServiceURL = 'https://secure.dragonpay.ph/DragonPayWebService/MerchantService.asmx?WSDL';
+
+    /**
+     * Dragonpay Test Web Service URL
+     *
+     * @var string
+     */
+    private $testWebServiceURL = 'http://test.dragonpay.ph/DragonPayWebService/MerchantService.asmx?WSDL';
 
     /**
      * Generate the URL to Dragonpay Payment Switch.
      *
      * @param array $params
+     * @param $testing
      * @return string
+     * @throws \Coreproc\Dragonpay\Exceptions\ValidationException
      */
-    public function generate(array $params)
+    public function generate(array $params, $testing)
     {
         $this->validate($params);
 
-        $soapClient = new SoapClient($this->webServiceURL);
+        $serviceUrl = $testing ? $this->testWebServiceURL : $this->webServiceURL;
+
+        $soapClient = new SoapClient($serviceUrl);
 
         $params = $this->setParams($params);
 
@@ -45,7 +55,9 @@ class SoapUrlGenerator extends UrlGenerator implements UrlGeneratorInterface
 
         $tokenId = $response->GetTxnTokenResult;
 
-        $url = $this->basePaymentUrl . "?tokenid={$tokenId}";
+        $baseUrl = $testing ? $this->testPaymentUrl : $this->basePaymentUrl;
+
+        $url = $baseUrl . "?tokenid={$tokenId}";
 
         return $url;
     }

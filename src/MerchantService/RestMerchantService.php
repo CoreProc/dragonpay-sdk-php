@@ -14,9 +14,15 @@ class RestMerchantService implements MerchantServiceInterface
 
     /**
      * @var string URL for querying a transaction
-     * @TODO put this in a config file
+     * @TODO Refactor (Duplicated definition of URLs)
      */
     private $merchantRequestUrl = 'http://test.dragonpay.ph/MerchantRequest.aspx';
+
+    /**
+     * @var string Test URL for querying a transaction
+     * @TODO Refactor (Duplicated definition of URLs)
+     */
+    private $testMerchantRequestUrl = 'http://test.dragonpay.ph/MerchantRequest.aspx';
 
     public function __construct()
     {
@@ -28,13 +34,14 @@ class RestMerchantService implements MerchantServiceInterface
      *
      * @param array $credentials
      * @param string $transactionId
+     * @param $testing
      * @return \GuzzleHttp\Stream\StreamInterface|null
      */
-    public function inquire(array $credentials, $transactionId)
+    public function inquire(array $credentials, $transactionId, $testing)
     {
         $params = $this->setParams($credentials, $transactionId);
 
-        $response = $this->doRequest('GETSTATUS', $params);
+        $response = $this->doRequest('GETSTATUS', $params, $testing);
 
         return $response->getBody();
     }
@@ -44,13 +51,14 @@ class RestMerchantService implements MerchantServiceInterface
      *
      * @param array $credentials
      * @param string $transactionId
+     * @param $testing
      * @return string
      */
-    public function cancel(array $credentials, $transactionId)
+    public function cancel(array $credentials, $transactionId, $testing)
     {
         $params = $this->setParams($credentials, $transactionId);
 
-        $response = $this->doRequest('VOID', $params);
+        $response = $this->doRequest('VOID', $params, $testing);
 
         return (string) $response->getBody();
     }
@@ -75,10 +83,14 @@ class RestMerchantService implements MerchantServiceInterface
      *
      * @param $operation
      * @param array $params
+     * @param $testing
+     * @return \GuzzleHttp\Message\FutureResponse|\GuzzleHttp\Message\ResponseInterface|\GuzzleHttp\Ring\Future\FutureInterface|null
      */
-    private function doRequest($operation, array $params)
+    private function doRequest($operation, array $params, $testing)
     {
-        return $this->guzzleClient->get($this->merchantRequestUrl, [
+        $url = $testing ? $this->testMerchantRequestUrl : $this->merchantRequestUrl;
+
+        return $this->guzzleClient->get($url, [
             'query' => [
                 'op'          => $operation,
                 'merchantid'  => $params['merchantId'],

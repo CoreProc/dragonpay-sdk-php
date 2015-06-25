@@ -21,9 +21,11 @@ class RestUrlGenerator extends UrlGenerator implements UrlGeneratorInterface
      * Generate the URL to Dragonpay Payment Switch.
      *
      * @param array $params
+     * @param $testing
      * @return string
+     * @throws \Coreproc\Dragonpay\Exceptions\ValidationException
      */
-    public function generate(array $params)
+    public function generate(array $params, $testing)
     {
         $this->validate($params);
 
@@ -54,9 +56,9 @@ class RestUrlGenerator extends UrlGenerator implements UrlGeneratorInterface
         // Append generated digest
         $queryString .= '&digest=' . urlencode($digest);
 
-        $url = "$this->basePaymentUrl?$queryString";
+        $baseUrl = $testing ? $this->testPaymentUrl : $this->basePaymentUrl;
 
-        return $url;
+        return "$baseUrl?$queryString";
     }
 
     /**

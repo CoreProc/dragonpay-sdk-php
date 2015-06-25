@@ -11,8 +11,9 @@ interface BillingServiceInterface
      *
      * @param $merchantId
      * @param array $params
+     * @param $testing
      * @return mixed
      */
-    public function sendBillingInformation($merchantId, array $params);
+    public function sendBillingInformation($merchantId, array $params, $testing);
 
 }

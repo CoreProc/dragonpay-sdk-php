@@ -38,7 +38,7 @@ class Checkout
         $logMessage = "[dragonpay-sdk][url-generation] Generating URL to Dragonpay Payment Switch.";
         $this->log($logMessage);
 
-        $url = $this->urlGenerator->generate($params);
+        $url = $this->urlGenerator->generate($params, $this->client->isTesting());
 
         // Log successful generation of URL
         $logMessage = "[dragonpay-sdk][url-generation] Successfully generated URL to Dragonpay Payment Switch. URL: \"{$url}\"";

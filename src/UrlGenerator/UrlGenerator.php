@@ -12,9 +12,15 @@ abstract class UrlGenerator
      * Dragonpay Payment Switch Base URL
      *
      * @var string
-     * @TODO Put this in a config file
      */
-    protected $basePaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
+    protected $basePaymentUrl = 'https://gw.dragonpay.ph/Pay.aspx';
+
+    /**
+     * Dragonpay Payment Switch Test URL
+     *
+     * @var string
+     */
+    protected $testPaymentUrl = 'http://test.dragonpay.ph/Pay.aspx';
 
     /**
      * @var array Validation rules

@@ -10,17 +10,19 @@ interface MerchantServiceInterface
      *
      * @param array $credentials
      * @param $transactionId
+     * @param $testing
      * @return string
      */
-    public function inquire(array $credentials, $transactionId);
+    public function inquire(array $credentials, $transactionId, $testing);
 
     /**
      * Cancel a transaction.
      *
      * @param array $credentials
      * @param $transactionId
+     * @param $testing
      * @return string
      */
-    public function cancel(array $credentials, $transactionId);
+    public function cancel(array $credentials, $transactionId, $testing);
 
 }

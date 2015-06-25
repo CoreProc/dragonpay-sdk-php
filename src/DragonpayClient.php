@@ -30,20 +30,37 @@ class DragonpayClient
     private $logger;
 
     /**
-     * @param array $credentials Merchant Credentials
-     * @param bool $logging
-     * @param null|string $logDirectory
+     * @var bool Enable/disable testing
+     */
+    private $testing = false;
+
+    /**
+     * @param array $config
+     * @throws Exception
      * @throws ValidationException
      */
-    public function __construct(array $credentials, $logging = false, $logDirectory = null)
+    public function __construct(array $config)
     {
-        if (empty($credentials['merchantId']) || empty($credentials['merchantPassword'])) {
-            throw new ValidationException('Please set the Merchant ID or password.');
+        if (empty($config['merchantId']) || empty($config['merchantPassword'])) {
+            throw new ValidationException('Please set the Merchant ID and password.');
         };
 
-        $this->merchantId = $credentials['merchantId'];
-        $this->merchantPassword = $credentials['merchantPassword'];
-        $this->setLogger($logging, $logDirectory);
+        $this->merchantId = $config['merchantId'];
+        $this->merchantPassword = $config['merchantPassword'];
+
+        if ( ! isset($config['logging'])) {
+            $config['logging'] = false;
+        }
+
+        if ( ! isset($config['logDirectory'])) {
+            $config['logDirectory'] = null;
+        }
+
+        $this->setLogger($config['logging'], $config['logDirectory']);
+
+        if (isset($config['testing']) && $config['testing'] === true) {
+            $this->testing = true;
+        }
     }
 
     /**
@@ -82,6 +99,14 @@ class DragonpayClient
     }
 
     /**
+     * @return bool
+     */
+    public function isTesting()
+    {
+        return $this->testing;
+    }
+
+    /**
      * Set the logger if logging is set to true.
      *
      * @param bool $logging
@@ -90,7 +115,7 @@ class DragonpayClient
      */
     private function setLogger($logging, $logDirectory)
     {
-        if ($logging == true ) {
+        if ($logging === true) {
             if ( ! is_dir($logDirectory)) {
                 throw new Exception('Please set a valid directory in order to enable logging.');
             }

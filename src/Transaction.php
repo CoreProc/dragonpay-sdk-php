@@ -53,7 +53,7 @@ class Transaction
         $logMessage = "[dragonpay-sdk][transaction-inquiry] Inquiring status of Transaction ID {$transactionId}";
         $this->log($logMessage);
 
-        $code = $this->merchantService->inquire($this->credentials, $transactionId);
+        $code = $this->merchantService->inquire($this->credentials, $transactionId, $this->client->isTesting());
 
         $status = $this->parseTransactionStatusCode($code);
 
@@ -77,7 +77,7 @@ class Transaction
         $logMessage = "[dragonpay-sdk][transaction-cancellation] Transaction ID {$transactionId} is being cancelled.";
         $this->log($logMessage);
 
-        $code = $this->merchantService->cancel($this->credentials, $transactionId);
+        $code = $this->merchantService->cancel($this->credentials, $transactionId, $this->client->isTesting());
 
         $status = $this->parseStatusCode($code);
 
@@ -109,7 +109,7 @@ class Transaction
 
         $merchantId = $this->client->getMerchantId();
 
-        $code = $this->merchantService->sendBillingInformation($merchantId, $params);
+        $code = $this->merchantService->sendBillingInformation($merchantId, $params, $this->client->isTesting());
 
         // Log sending of billing information
         $logMessage = "[dragonpay-sdk][billing-info-sending] Sending billing information of Transaction ID {$params['transactionId']}";

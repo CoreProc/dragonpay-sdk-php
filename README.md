@@ -25,7 +25,7 @@ Once you've downloaded the composer.phar file, continue with your installation b
 
     php composer.phar install
     
-## Usage
+## Usage (TODO: update)
 
 ### Setting up the Dragonpay Client
 

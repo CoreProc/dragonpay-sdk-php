@@ -11,14 +11,17 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      * Dragonpay Web Service URL
      *
      * @var string
-     * @TODO Put this in a config file
+     * @TODO Refactor (Duplicated definition of URLs)
      */
-    private $webServiceURL = 'http://test.dragonpay.ph/DragonPayWebService/MerchantService.asmx?WSDL';
+    private $webServiceURL = 'https://gw.dragonpay.ph/DragonPayWebService/MerchantService.asmx?WSDL';
 
-    public function __construct()
-    {
-        $this->SOAPClient = new SoapClient($this->webServiceURL);
-    }
+    /**
+     * Dragonpay Test Web Service URL
+     *
+     * @var string
+     * @TODO Refactor (Duplicated definition of URLs)
+     */
+    private $testWebServiceURL = 'http://test.dragonpay.ph/DragonPayWebService/MerchantService.asmx?WSDL';
 
     /**
      * Inquire for a transaction's status.
@@ -27,11 +30,13 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      * @param string $transactionId
      * @return mixed
      */
-    public function inquire(array $credentials, $transactionId)
+    public function inquire(array $credentials, $transactionId, $testing)
     {
         $params = $this->setParams($credentials, $transactionId);
 
-        $response = $this->SOAPClient->__soapCall('GetTxnStatus', [$params]);
+        $soapClient = $this->createSoapClient($testing);
+
+        $response = $soapClient->__soapCall('GetTxnStatus', [$params]);
 
         return $response->GetTxnStatusResult;
     }
@@ -41,13 +46,16 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      *
      * @param array $credentials
      * @param string $transactionId
+     * @param $testing
      * @return mixed
      */
-    public function cancel(array $credentials, $transactionId)
+    public function cancel(array $credentials, $transactionId, $testing)
     {
         $params = $this->setParams($credentials, $transactionId);
 
-        $response = $this->SOAPClient->__soapCall('CancelTransaction', [$params]);
+        $soapClient = $this->createSoapClient($testing);
+
+        $response = $soapClient->__soapCall('CancelTransaction', [$params]);
 
         return $response->CancelTransactionResult;
     }
@@ -58,16 +66,19 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      *
      * @param string $merchantId
      * @param array $params
+     * @param $testing
      * @return mixed
      */
-    public function sendBillingInformation($merchantId, array $params)
+    public function sendBillingInformation($merchantId, array $params, $testing)
     {
         $params['merchantId'] = $merchantId;
         $params['merchantTxnId'] = $params['transactionId'];
 
         unset($params['transactionId']);
 
-        $response = $this->SOAPClient->__soapCall('SendBillingInfo', [$params]);
+        $soapClient = $this->createSoapClient($testing);
+
+        $response = $soapClient->__soapCall('SendBillingInfo', [$params]);
 
         return $response->SendBillingInfoResult;
     }
@@ -76,6 +87,7 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      * Set the parameters for transaction inquiry and cancellation.
      *
      * @param array $credentials
+     * @param $transactionId
      * @return array
      */
     private function setParams(array $credentials, $transactionId)
@@ -87,6 +99,19 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
         ];
 
         return $params;
+    }
+
+    /**
+     * @param $testing
+     * @return SoapClient
+     */
+    public function createSoapClient($testing)
+    {
+        $url = $testing ? $this->testWebServiceURL : $this->webServiceURL;
+
+        $soapClient = new SoapClient($url);
+
+        return $soapClient;
     }
 
 }
