@@ -28,13 +28,18 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      *
      * @param array $credentials
      * @param string $transactionId
+     * @param $testing
      * @return mixed
      */
     public function inquire(array $credentials, $transactionId, $testing)
     {
-        $params = $this->setParams($credentials, $transactionId);
-
         $soapClient = $this->createSoapClient($testing);
+
+        $params = [
+            'merchantId' => $credentials['merchantId'],
+            'password'   => $credentials['merchantPassword'],
+            'txnId'      => $transactionId,
+        ];
 
         $response = $soapClient->__soapCall('GetTxnStatus', [$params]);
 
@@ -51,9 +56,13 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
      */
     public function cancel(array $credentials, $transactionId, $testing)
     {
-        $params = $this->setParams($credentials, $transactionId);
-
         $soapClient = $this->createSoapClient($testing);
+
+        $params = [
+            'merchantId'    => $credentials['merchantId'],
+            'password'      => $credentials['merchantPassword'],
+            'merchantTxnId' => $transactionId,
+        ];
 
         $response = $soapClient->__soapCall('CancelTransaction', [$params]);
 
@@ -81,24 +90,6 @@ class SoapMerchantService implements MerchantServiceInterface, BillingServiceInt
         $response = $soapClient->__soapCall('SendBillingInfo', [$params]);
 
         return $response->SendBillingInfoResult;
-    }
-
-    /**
-     * Set the parameters for transaction inquiry and cancellation.
-     *
-     * @param array $credentials
-     * @param $transactionId
-     * @return array
-     */
-    private function setParams(array $credentials, $transactionId)
-    {
-        $params = [
-            'merchantId' => $credentials['merchantId'],
-            'password'   => $credentials['merchantPassword'],
-            'txnId'      => $transactionId,
-        ];
-
-        return $params;
     }
 
     /**
