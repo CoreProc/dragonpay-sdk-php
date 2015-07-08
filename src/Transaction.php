@@ -156,34 +156,13 @@ class Transaction
     }
 
     /**
-     * Generates a digest to be compared to the Dragonpay Payment Switch
-     * response digest parameter.
-     *
-     * @param $params
-     * @return string
-     */
-    private function generateResponseDigest($params)
-    {
-        $string = sprintf(
-            '%s:%s:%s:%s:%s',
-            $params['transactionId'],
-            $params['referenceNumber'],
-            $params['status'],
-            $params['message'],
-            $this->client->getMerchantPassword()
-        );
-
-        return sha1($string);
-    }
-
-    /**
      * Parse the status code response of the transaction inquiry.
      *
      * @param $code
      * @return string
      * @TODO Make a parser class?
      */
-    private function parseTransactionStatusCode($code)
+    public function parseTransactionStatusCode($code)
     {
         switch ($code) {
             case 'S':
@@ -216,6 +195,27 @@ class Transaction
         }
 
         return $status;
+    }
+
+    /**
+     * Generates a digest to be compared to the Dragonpay Payment Switch
+     * response digest parameter.
+     *
+     * @param $params
+     * @return string
+     */
+    private function generateResponseDigest($params)
+    {
+        $string = sprintf(
+            '%s:%s:%s:%s:%s',
+            $params['transactionId'],
+            $params['referenceNumber'],
+            $params['status'],
+            $params['message'],
+            $this->client->getMerchantPassword()
+        );
+
+        return sha1($string);
     }
 
     /**
