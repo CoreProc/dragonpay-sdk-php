@@ -116,9 +116,15 @@ class DragonpayClient
     private function setLogger($logging, $logDirectory)
     {
         if ($logging === true) {
+
+            if ( ! file_exists($logDirectory)) {
+                mkdir($logDirectory);
+            }
+
             if ( ! is_dir($logDirectory)) {
                 throw new Exception('Please set a valid directory in order to enable logging.');
             }
+
             $this->logging = true;
             $this->logger = new Logger($logDirectory);
         }
