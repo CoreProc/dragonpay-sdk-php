@@ -10,12 +10,13 @@ A PHP Library for consuming Dragonpay's Payment Switch API.
 The easiest way to install this library is via Composer.
 
 Create a `composer.json` file and enter the following:
-
-    {
-        "require": {
-            "coreproc/dragonpay-sdk": "dev-master"
-        }
+```json
+{
+    "require": {
+        "coreproc/dragonpay-sdk": "dev-master"
     }
+}
+```
 
 If you haven't yet downloaded your composer file, you can do so by executing the following in your command line:
 
@@ -31,70 +32,86 @@ Once you've downloaded the composer.phar file, continue with your installation b
 
 Require the autoloader and import the `DragonpayClient`:
 
-    require '../vendor/autoload.php';
+```php
+require '../vendor/autoload.php';
 
-    use Coreproc\Dragonpay\DragonpayClient;
+use Coreproc\Dragonpay\DragonpayClient;
+```
     
 Set the merchant credentials:
 
-    $credentials = [
-        'merchantId'        => 'merchant-id',
-        'merchantPassword'  => 'merchant-password',
-    ];
+```php
+$credentials = [
+    'merchantId'        => 'merchant-id',
+    'merchantPassword'  => 'merchant-password',
+];
+```
     
 Logging is optional. It's set to false by default and can omitted when instantiating the client like so:
 
-    $client = new DragonpayClient($credentials);
+```php
+$client = new DragonpayClient($credentials);
+```
     
 When set to true, a third parameter is required for the logging directory.
 
-    $logging = true;
-    $logDirectory = 'logs';
+```php
+$logging = true;
+$logDirectory = 'logs';
+```
 
 Instantiate the client:
 
-    $client = new DragonpayClient($credentials, $logging, $logDirectory);
+```php
+$client = new DragonpayClient($credentials, $logging, $logDirectory);
+```
 
 ### Checkout
 
 Import the `Checkout` class:
-
-    use Coreproc\Dragonpay\Checkout;
+```php
+use Coreproc\Dragonpay\Checkout;
+```
 
 Instantiate the `Checkout` class like so:
- 
-    $checkout = new Checkout($client);
+```php
+$checkout = new Checkout($client);
+```
     
 REST is the default web service used by the `Checkout` class. For using the SOAP web service, you can set the second parameter to `SOAP`:
-
-    $checkout = new Checkout($client, 'SOAP');
+```php
+$checkout = new Checkout($client, 'SOAP');
+```
 
 Transaction parameters from the merchant site:
 
 REST service specific required parameters:
-    
-    $params = [
-        'transactionId' => 'transaction-id',
-        'amount'        => '20000.00',
-        'currency'      => 'PHP',
-        'description'   => 'Playstation 4',
-        'email'         => 'john@example.com',
-    ];
+```php    
+$params = [
+    'transactionId' => 'transaction-id',
+    'amount'        => '20000.00',
+    'currency'      => 'PHP',
+    'description'   => 'Playstation 4',
+    'email'         => 'john@example.com',
+];
+```
 
 SOAP service specific required parameters:
-
-    $params = [
-        'transactionId' => 'transaction-id',
-        'amount'        => '20000.99',
-        'currency'      => 'PHP',
-        'description'   => 'Playstation 4',
-    ];
+```php
+$params = [
+    'transactionId' => 'transaction-id',
+    'amount'        => '20000.99',
+    'currency'      => 'PHP',
+    'description'   => 'Playstation 4',
+];
+```
 
 For getting the URL to Payment Switch:
 
 The `getUrl` method returns a URL for redirecting to the Payment Switch manually.
-    
-    $url = $checkout->getUrl($params);
+```php
+$url = $checkout->getUrl($params);
+```
     
 Now `$url` is equal to:
 
@@ -107,8 +124,9 @@ Using the SOAP web service:
     http://gw.dragonpay.ph/Pay.aspx?tokenid=8ca5a73275d5f54cz06219a09f935c26
 
 Use the `redirect` method for redirecting to the generated URL:
-
-    $checkout->redirect($params);
+```php
+$checkout->redirect($params);
+```
     
 Filtering Payment Channels
 
@@ -136,40 +154,45 @@ For redirecting directly to a payment channel:
     PayPal: paypal_direct
     
 Pass on the filter like so:
-
-    $filter = 'online_banking';
+```php
+$filter = 'online_banking';
     
-    $checkout = new Checkout($client);
+$checkout = new Checkout($client);
     
-    $checkout->getUrl($params, $filter);
+$checkout->getUrl($params, $filter);
     
-    $checkout->redirect($params, $filter);
+$checkout->redirect($params, $filter);
+```
     
 ### Handling the Response
 
 Import the `Transaction` class:
-
-    use Coreproc\Dragonpay\Transaction;
+```php
+use Coreproc\Dragonpay\Transaction;
+```
 
 Pass in the client instance:
-
-    $transaction = new Transaction($client);
+```php
+$transaction = new Transaction($client);
+```
 
 Required request data from Dragonpay Payment Switch:
-
-    $params = [
-        'transactionId'   => $_GET['txnid'],
-        'referenceNumber' => $_GET['refNo'],
-        'status'          => $_GET['status'],
-        'message'         => $_GET['message'],
-        'digest'          => $_GET['digest']
-    ];
+```php
+$params = [
+    'transactionId'   => $_GET['txnid'],
+    'referenceNumber' => $_GET['refNo'],
+    'status'          => $_GET['status'],
+    'message'         => $_GET['message'],
+    'digest'          => $_GET['digest']
+];
+```
     
 Checking if the transaction is successful:
 
 The `isSuccessful` method returns a boolean (true or false)
-
-    $status = $transaction->isSuccessful($params); // returns true/false
+```php
+$status = $transaction->isSuccessful($params); // returns true/false
+```
     
 ### Support functions
 
@@ -181,73 +204,84 @@ integrate and automate their systems. These functions are available using the RE
 The merchant can inquire the status of a transaction by using this function.
 
 Import the `Transaction` class:
-
-    use Coreproc\Dragonpay\Transaction;
+```php
+use Coreproc\Dragonpay\Transaction;
+```
     
 Instantiate the `Transaction` class like so:
-
-    $transaction = new Transaction($client);
+```php
+$transaction = new Transaction($client);
+```
     
 REST is the default web service used by the `Transaction` class. For using the SOAP web service, you can set the second parameter to `SOAP`:
-
-    $transaction = new Transaction($client, 'SOAP');
+```php
+$transaction = new Transaction($client, 'SOAP');
+```
     
 The `inquire` method returns the status of the transaction (string)
 
-    $transactionId = 'transaction-id';
+```php
+$transactionId = 'transaction-id';
     
-    // Returns one of the following:
-    // Success
-    // Failure
-    // Pending
-    // Unknown
-    // Refund
-    // Chargeback
-    // Void
-    // Authorized 
-    // Error
-    $status = $transaction->inquire($transactionId); 
+// Returns one of the following:
+// Success
+// Failure
+// Pending
+// Unknown
+// Refund
+// Chargeback
+// Void
+// Authorized 
+// Error
+$status = $transaction->inquire($transactionId); 
+```
     
 ### Cancellation of Transaction
 
 The merchant can cancel a **pending** transaction by using this function.
 
 The `cancel` method returns the status of the transaction cancellation (string)
- 
-    use Coreproc\Dragonpay\Transaction;
+```php
+use Coreproc\Dragonpay\Transaction;
     
-    $transaction = new Transaction($client); // OR $transaction = new Transaction($client, 'SOAP');
+$transaction = new Transaction($client); // OR $transaction = new Transaction($client, 'SOAP');
     
-    $transactionId = 'transaction-id';
+$transactionId = 'transaction-id';
     
-    $status = $transaction->cancel($transactionId); // returns Success or Failed
-    
+$status = $transaction->cancel($transactionId); // returns Success or Failed
+```
+
 ### Sending of Billing Information
 
 For additional fraud checking, the merchant can send the customer’s billing address by using this function.
 
 The SOAP web service is required for this function.
-
-    use Coreproc\Dragonpay\Transaction;
+```php
+use Coreproc\Dragonpay\Transaction;
     
-    $transaction = new Transaction($client, 'SOAP');
+$transaction = new Transaction($client, 'SOAP');
+```
 
 Required parameters to be sent to Payment Switch:
 
-    $params = [
-        'transactionId' => '12345',
-        'firstName'     => 'John',
-        'lastName'      => 'Doe',
-        'address1'      => 'Address 1',
-        'address2'      => 'Address 2',
-        'city'          => 'Quezon City',
-        'state'         => 'State',
-        'country'       => 'PH', // 2-char ISO country code (ex. PH, US, CA)
-        'zipCode'       => '1116', // OPTIONAL
-        'telNo'         => '(02)9123456',
-        'email'         => 'john@example.com'
-    ];
+```php
+$params = [
+    'transactionId' => '12345',
+    'firstName'     => 'John',
+    'lastName'      => 'Doe',
+    'address1'      => 'Address 1',
+    'address2'      => 'Address 2',
+    'city'          => 'Quezon City',
+    'state'         => 'State',
+    'country'       => 'PH', // 2-char ISO country code (ex. PH, US, CA)
+    'zipCode'       => '1116', // OPTIONAL
+    'telNo'         => '(02)9123456',
+    'email'         => 'john@example.com'
+];
+```
     
 The `sendBillingInformation` method returns the status of sending of billing information. (string)
 
-    $status = $transaction->sendBillingInformation($params); // returns Success or Failed
+```php
+$status = $transaction->sendBillingInformation($params); // returns Success or Failed
+```
