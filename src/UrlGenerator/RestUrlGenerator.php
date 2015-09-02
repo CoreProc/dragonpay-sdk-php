@@ -2,35 +2,29 @@
 
 namespace Coreproc\Dragonpay\UrlGenerator;
 
-class RestUrlGenerator extends UrlGenerator implements UrlGeneratorInterface
+class RestUrlGenerator implements UrlGeneratorInterface
 {
 
     /**
-     * @var array Validation rules
+     * @var string Dragonpay Payment Switch API base URI
      */
-    protected $rules = [
-        'merchantId',
-        'password',
-        'transactionId',
-        'amount',
-        'currency',
-        'description',
-    ];
+    protected $baseUri;
+
+    public function __construct($testing = false)
+    {
+        $this->baseUri = $testing ? TESTING_BASE_URI : PRODUCTION_BASE_URI;
+    }
 
     /**
-     * Generate the URL to Dragonpay Payment Switch.
-     *
      * @param array $params
-     * @param $testing
+     * @param null $filter
      * @return string
-     * @throws \Coreproc\Dragonpay\Exceptions\ValidationException
+     * @TODO Add functionality for additional optional params
      */
-    public function generate(array $params, $testing)
+    public function generate(array $params, $filter = null)
     {
-        $this->validate($params);
-
         $queryString = sprintf(
-            'merchantid=%s&txnid=%s&amount=%s&ccy=%s&description=%s&email=%s',
+            '?merchantid=%s&txnid=%s&amount=%s&ccy=%s&description=%s&email=%s',
             urlencode($params['merchantId']),
             urlencode($params['transactionId']),
             urlencode($params['amount']),
@@ -39,37 +33,25 @@ class RestUrlGenerator extends UrlGenerator implements UrlGeneratorInterface
             urlencode($params['email'])
         );
 
-        // Optional
-        // param1: value to be posted back to merchant url when completed
-        if (isset($params['param1'])) {
-            $queryString .= '%26param1=' . urlencode($params['param1']);
+        // Generate digest and append it to the query string
+        $queryString .= '&digest=' . $this->generateDigest($params);
+
+        // If there's a filter, append its code to the query string
+        if ($filter !== null) {
+            $queryString .= $this->getFilterCode($filter);
         }
 
-        // Optional
-        // param2: value to be posted back to merchant url when completed
-        if (isset($params['param2'])) {
-            $queryString .= '%26param2=' . urlencode($params['param2']);
-        }
-
-        $digest = $this->generateDigest($params);
-
-        // Append generated digest
-        $queryString .= '&digest=' . urlencode($digest);
-
-        $baseUrl = $testing ? $this->testPaymentUrl : $this->basePaymentUrl;
-
-        return "$baseUrl?$queryString";
+        // Return the full URL
+        return $this->baseUri . '/Pay.aspx' . $queryString;
     }
 
     /**
-     * Generate a digest to be appended to the generated URL's params.
-     *
-     * @param array $params
+     * @param $params
      * @return string
      */
-    private function generateDigest(array $params)
+    private function generateDigest($params)
     {
-        $string = sprintf(
+        $message = sprintf(
             '%s:%s:%s:%s:%s:%s:%s',
             $params['merchantId'],
             $params['transactionId'],
@@ -77,10 +59,58 @@ class RestUrlGenerator extends UrlGenerator implements UrlGeneratorInterface
             $params['currency'],
             $params['description'],
             $params['email'],
-            $params['password']
+            $params['merchantPassword']
         );
 
-        return sha1($string);
+        return sha1($message);
+    }
+
+    /**
+     * Note: Is the switch case an indication of code smell?
+     * (Use polymorphism instead?)
+     *
+     * @param $filter
+     * @return string
+     */
+    private function getFilterCode($filter)
+    {
+        switch ($filter) {
+            case 'online_banking':
+                $code = '&mode=1';
+                break;
+            case 'otc_banking_atm':
+                $code = '&mode=2';
+                break;
+            case 'otc_non_bank':
+                $code = '&mode=4';
+                break;
+            case 'paypal':
+                $code = '&mode=32';
+                break;
+            case 'credit_card':
+                $code = '&mode=64';
+                break;
+            case 'mobile':
+                $code = '&mode=128';
+                break;
+            case 'international_otc':
+                $code = '&mode=256';
+                break;
+            case 'gcash_direct':
+                $code = '&procid=GCSH';
+                break;
+            case 'credit_card_direct':
+                $code = '&procid=CC';
+                break;
+            case 'paypal_direct':
+                $code = '&procid=PYPL';
+                break;
+            default:
+                $code = '';
+                break;
+        }
+
+        return $code;
     }
 
 }

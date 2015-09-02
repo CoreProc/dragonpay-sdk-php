@@ -6,12 +6,10 @@ interface UrlGeneratorInterface
 {
 
     /**
-     * Generate the URL to Dragonpay Payment Switch.
-     *
      * @param array $params
-     * @param $testing
+     * @param null $filter
      * @return string
      */
-    public function generate(array $params, $testing);
+    public function generate(array $params, $filter = null);
 
 }

@@ -4,12 +4,11 @@ namespace Coreproc\Dragonpay\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class DragonpayTransaction extends Facade
+class Dragonpay extends Facade
 {
-
     public static function getFacadeAccessor()
     {
-        return 'transaction';
+        return 'dragonpay';
     }
 
 }
