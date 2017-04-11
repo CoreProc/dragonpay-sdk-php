@@ -15,7 +15,7 @@ class DragonpayServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            dirname(__DIR__) . '..\..\config\dragonpay.php' => config_path('dragonpay.php'),
+            realpath(__DIR__ . '/../../config/dragonpay.php') => config_path('dragonpay.php'),
         ]);
     }
 
